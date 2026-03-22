@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { agents as initialAgents, executionLogs } from '@/lib/mock-data';
 import { addToast } from '@/components/toast';
 import { useDocViewer } from '@/components/doc-context';
@@ -40,48 +41,59 @@ function StatCard({ icon: Icon, label, value, sub }: {
   );
 }
 
-// Extract all attention items from all logs that have structured output
-const approvalItems = [
+interface AttentionItem {
+  id: string;
+  agent: string;
+  text: string;
+  priority: 'urgent' | 'high' | 'medium';
+  actions: string[];
+  docId?: string;
+  docName?: string;
+}
+
+const initialAttentionItems: AttentionItem[] = [
   {
     id: '1',
     agent: 'Lead Pipeline',
     text: 'Toyota/Aman proposal sent 3 days ago — no response yet.',
-    priority: 'high' as const,
+    priority: 'high',
     actions: ['Send Follow-up', 'Call Contact', 'Dismiss'],
+    docId: '1', docName: 'Proposal — Toyota/Aman',
   },
   {
     id: '2',
     agent: 'Lead Pipeline',
     text: 'Leumi Tech requested pricing by end of week — proposal needed.',
-    priority: 'high' as const,
+    priority: 'high',
     actions: ['Generate Proposal', 'Schedule Call', 'Dismiss'],
   },
   {
     id: '3',
     agent: 'Email Triage',
     text: 'Client "Strauss Group" — contract renewal question, reply needed today.',
-    priority: 'urgent' as const,
+    priority: 'urgent',
     actions: ['View Email', 'Send Draft Reply', 'Call Client'],
   },
   {
     id: '4',
     agent: 'Proposal Generator',
     text: 'Toyota/Aman proposal ready — review pricing before sending to client.',
-    priority: 'medium' as const,
+    priority: 'medium',
     actions: ['Review Now', 'Approve & Send'],
+    docId: '1', docName: 'Proposal — Toyota/Aman',
   },
   {
     id: '5',
     agent: 'Receipt Matching',
     text: '4 missing receipts — ₪5,553 in unmatched transactions.',
-    priority: 'medium' as const,
+    priority: 'medium',
     actions: ['Upload Receipts', 'View Details'],
   },
   {
     id: '6',
     agent: 'LinkedIn Outreach',
     text: 'Avi Koren (CTO, Payoneer) responded — interested in a demo.',
-    priority: 'high' as const,
+    priority: 'high',
     actions: ['View Reply', 'Schedule Demo'],
   },
 ];
@@ -131,13 +143,69 @@ const actionIcons: Record<string, React.ComponentType<{ className?: string }>> =
   'Add to Segment': UserPlus,
 };
 
+// Demo action messages — richer feedback for different action types
+const actionFeedback: Record<string, { message: string; type: 'success' | 'info' }> = {
+  'Send Follow-up': { message: 'Follow-up email drafted and sent to contact. Calendar reminder set for 48h check-in.', type: 'success' },
+  'Call Contact': { message: 'Initiating call... Opening dialer for contact. Call notes template loaded.', type: 'info' },
+  'Call Client': { message: 'Initiating call... Opening dialer for Strauss Group. Previous call notes loaded.', type: 'info' },
+  'Generate Proposal': { message: 'Proposal Generator agent started. Template selected, pricing calculated. Draft will be ready in ~3 minutes.', type: 'success' },
+  'Schedule Call': { message: 'Finding available slots... Call scheduled for tomorrow at 14:00. Calendar invite sent to contact.', type: 'success' },
+  'Schedule Demo': { message: 'Demo scheduled for Thursday at 11:00. Calendar invite sent to Avi Koren. Demo environment prepared.', type: 'success' },
+  'Send Draft Reply': { message: 'AI-drafted reply sent for your review. Check your email drafts folder. Reply addresses contract renewal terms.', type: 'success' },
+  'Approve & Send': { message: 'Proposal approved and sent to client via email. Delivery confirmation received. Follow-up scheduled in 3 days.', type: 'success' },
+  'Upload Receipts': { message: 'Upload dialog opened. Drag & drop receipts or select files from your device.', type: 'info' },
+  'Add to Segment': { message: 'Contact added to outreach segment. Will be included in next LinkedIn batch.', type: 'success' },
+};
+
 export default function OverviewPage() {
   const { openDoc } = useDocViewer();
+  const [attentionItems, setAttentionItems] = useState(initialAttentionItems);
+  const [completedActions, setCompletedActions] = useState<Record<string, string[]>>({});
   const running = initialAgents.filter(a => a.status === 'running').length;
   const todayLogs = executionLogs.filter(l => l.startedAt.startsWith('2026-03-21'));
   const successRate = Math.round(
     (executionLogs.filter(l => l.status === 'success').length / executionLogs.length) * 100
   );
+
+  const handleAction = (itemId: string, action: string, item: AttentionItem) => {
+    // Dismiss — remove the item with animation
+    if (action === 'Dismiss') {
+      setAttentionItems(prev => prev.filter(i => i.id !== itemId));
+      addToast('Item dismissed', 'info');
+      return;
+    }
+
+    // View/Review actions — open document viewer if available
+    if (['Review Now', 'View Details', 'View Reply', 'View Email'].includes(action)) {
+      if (item.docId && item.docName) {
+        openDoc({ id: item.docId, name: item.docName, format: 'PDF', agent: item.agent, department: '', date: 'Mar 21', status: 'draft' });
+      } else {
+        openDoc({ id: itemId, name: item.text.split('—')[0].trim(), format: 'PDF', agent: item.agent, department: '', date: 'Mar 21', status: 'active' });
+      }
+      return;
+    }
+
+    // Mark action as completed on the item
+    setCompletedActions(prev => ({
+      ...prev,
+      [itemId]: [...(prev[itemId] || []), action],
+    }));
+
+    // Show rich feedback
+    const feedback = actionFeedback[action];
+    if (feedback) {
+      addToast(feedback.message, feedback.type);
+    } else {
+      addToast(`${action} — completed successfully`, 'success');
+    }
+
+    // For "Approve & Send" — remove item after short delay
+    if (action === 'Approve & Send') {
+      setTimeout(() => {
+        setAttentionItems(prev => prev.filter(i => i.id !== itemId));
+      }, 1500);
+    }
+  };
 
   return (
     <div>
@@ -161,16 +229,23 @@ export default function OverviewPage() {
           <div className="flex items-center gap-2 mb-4">
             <AlertTriangle className="w-4 h-4 text-yellow-400" />
             <h2 className="text-lg font-semibold text-white">Needs Your Attention</h2>
-            <span className="text-xs font-medium text-yellow-400 bg-yellow-500/20 px-2 py-0.5 rounded-full">{approvalItems.length}</span>
+            <span className="text-xs font-medium text-yellow-400 bg-yellow-500/20 px-2 py-0.5 rounded-full">{attentionItems.length}</span>
           </div>
 
           <div className="space-y-3">
-            {approvalItems.map(item => {
+            {attentionItems.length === 0 && (
+              <div className="text-center py-8 text-gray-500 border border-surface-border rounded-xl bg-surface-raised">
+                <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-accent-400 opacity-60" />
+                <p className="text-sm">All caught up! No items need attention.</p>
+              </div>
+            )}
+            {attentionItems.map(item => {
               const pLabel = priorityLabels[item.priority];
+              const itemCompleted = completedActions[item.id] || [];
               return (
                 <div
                   key={item.id}
-                  className={`border rounded-xl p-4 ${priorityStyles[item.priority]}`}
+                  className={`border rounded-xl p-4 transition-all duration-300 ${priorityStyles[item.priority]}`}
                 >
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="flex-1 min-w-0">
@@ -188,20 +263,24 @@ export default function OverviewPage() {
                       const AIcon = actionIcons[action] || Eye;
                       const isDismiss = action === 'Dismiss';
                       const isPrimary = ai === 0;
+                      const isCompleted = itemCompleted.includes(action);
                       return (
                         <button
                           key={ai}
-                          onClick={() => addToast(`${action} — action triggered`, 'success')}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                            isDismiss
+                          disabled={isCompleted}
+                          onClick={() => handleAction(item.id, action, item)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                            isCompleted
+                              ? 'bg-accent-500/20 text-accent-400 border-accent-500/30 cursor-default'
+                              : isDismiss
                               ? 'bg-surface-overlay text-gray-400 hover:text-gray-200 border-surface-border'
                               : isPrimary
                               ? 'bg-brand-500/15 text-brand-400 hover:bg-brand-500/25 border-brand-500/20'
                               : 'bg-accent-500/15 text-accent-400 hover:bg-accent-500/25 border-accent-500/20'
                           }`}
                         >
-                          <AIcon className="w-3 h-3" />
-                          {action}
+                          {isCompleted ? <CheckCircle2 className="w-3 h-3" /> : <AIcon className="w-3 h-3" />}
+                          {isCompleted ? `${action} ✓` : action}
                         </button>
                       );
                     })}
