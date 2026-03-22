@@ -2,6 +2,7 @@
 
 import { agents as initialAgents, executionLogs } from '@/lib/mock-data';
 import { addToast } from '@/components/toast';
+import { useDocViewer } from '@/components/doc-context';
 import {
   Activity,
   CheckCircle2,
@@ -86,12 +87,12 @@ const approvalItems = [
 ];
 
 const recentDocuments = [
-  { name: 'Proposal — Toyota/Aman', type: 'PDF', agent: 'Proposal Generator', date: 'Mar 20', size: '₪52K scope' },
-  { name: 'Daily Pipeline Brief', type: 'PDF', agent: 'Lead Pipeline', date: 'Mar 21', size: '47 leads' },
-  { name: 'Monthly Billing Summary — Feb', type: 'XLSX', agent: 'Client Invoicing', date: 'Feb 28', size: '₪148K' },
-  { name: 'Invoice #2026-024 — Strauss Group', type: 'PDF', agent: 'Client Invoicing', date: 'Feb 28', size: '₪28,400' },
-  { name: 'Missing Receipts List', type: 'DOC', agent: 'Receipt Matching', date: 'Mar 16', size: '4 items' },
-  { name: 'Recruiting Report — Senior Dev', type: 'PDF', agent: 'Recruiting Pipeline', date: 'Mar 17', size: '23 apps' },
+  { id: '1', name: 'Proposal — Toyota/Aman', type: 'PDF', agent: 'Proposal Generator', date: 'Mar 20', size: '₪52K scope' },
+  { id: '2', name: 'Daily Pipeline Brief', type: 'PDF', agent: 'Lead Pipeline', date: 'Mar 21', size: '47 leads' },
+  { id: '3', name: 'Monthly Billing Summary — Feb', type: 'XLSX', agent: 'Client Invoicing', date: 'Feb 28', size: '₪148K' },
+  { id: '4', name: 'Invoice #2026-024 — Strauss Group', type: 'PDF', agent: 'Client Invoicing', date: 'Feb 28', size: '₪28,400' },
+  { id: '5', name: 'Missing Receipts List', type: 'DOC', agent: 'Receipt Matching', date: 'Mar 16', size: '4 items' },
+  { id: '6', name: 'Recruiting Report — Senior Dev', type: 'PDF', agent: 'Recruiting Pipeline', date: 'Mar 17', size: '23 apps' },
 ];
 
 const priorityStyles = {
@@ -131,6 +132,7 @@ const actionIcons: Record<string, React.ComponentType<{ className?: string }>> =
 };
 
 export default function OverviewPage() {
+  const { openDoc } = useDocViewer();
   const running = initialAgents.filter(a => a.status === 'running').length;
   const todayLogs = executionLogs.filter(l => l.startedAt.startsWith('2026-03-21'));
   const successRate = Math.round(
@@ -218,10 +220,11 @@ export default function OverviewPage() {
           </div>
 
           <div className="space-y-2">
-            {recentDocuments.map((doc, i) => (
+            {recentDocuments.map((doc) => (
               <div
-                key={i}
-                className="bg-surface-raised border border-surface-border rounded-xl p-3 hover:border-brand-500/30 transition-all group"
+                key={doc.id}
+                className="bg-surface-raised border border-surface-border rounded-xl p-3 hover:border-brand-500/30 transition-all group cursor-pointer"
+                onClick={() => openDoc({ id: doc.id, name: doc.name, format: doc.type, agent: doc.agent, department: '', date: doc.date, status: 'final' })}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-3 min-w-0">
@@ -240,21 +243,21 @@ export default function OverviewPage() {
                 </div>
                 <div className="flex gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
-                    onClick={() => addToast(`Opening ${doc.name}`, 'info')}
+                    onClick={(e) => { e.stopPropagation(); openDoc({ id: doc.id, name: doc.name, format: doc.type, agent: doc.agent, department: '', date: doc.date, status: 'final' }); }}
                     className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20"
                   >
                     <Eye className="w-3 h-3" />
                     View
                   </button>
                   <button
-                    onClick={() => addToast(`Editing ${doc.name}`, 'info')}
+                    onClick={(e) => { e.stopPropagation(); addToast(`Editing ${doc.name}`, 'info'); }}
                     className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-gray-300 bg-surface-overlay hover:bg-surface-overlay/80 border border-surface-border"
                   >
                     <Pencil className="w-3 h-3" />
                     Edit
                   </button>
                   <button
-                    onClick={() => addToast(`Downloading ${doc.name}`, 'success')}
+                    onClick={(e) => { e.stopPropagation(); addToast(`Downloading ${doc.name}`, 'success'); }}
                     className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-gray-300 bg-surface-overlay hover:bg-surface-overlay/80 border border-surface-border"
                   >
                     <Download className="w-3 h-3" />
