@@ -15,6 +15,18 @@ const PORT = process.env.DASHBOARD_PORT || 4242;
 const app = express();
 app.use(express.json());
 
+// CORS — allow the Netlify dashboard to call this API
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
+// Track running agents for stop functionality
+const runningAgents = new Map();
+
 // ── API ──────────────────────────────────────────────────────────────────────
 
 function loadClients() {
@@ -91,10 +103,14 @@ app.get('/api/run/:clientId/:agentName', async (req, res) => {
 
   const send = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
 
+  const runKey = `${clientId}:${agentName}`;
+  const controller = new AbortController();
+  runningAgents.set(runKey, controller);
+
   send('start', { clientId, agentName, timestamp: new Date().toISOString() });
 
   try {
-    send('log', { message: `Launching Claude agent for ${client.name}...` });
+    send('log', { message: `Launching agent for ${client.name}...` });
 
     const onProgress = (event) => {
       if (event.type === 'init') {
@@ -114,7 +130,49 @@ app.get('/api/run/:clientId/:agentName', async (req, res) => {
     send('error', { message: err.message });
   }
 
+  runningAgents.delete(runKey);
   res.end();
+});
+
+// Stop a running agent
+app.post('/api/stop/:clientId/:agentName', (req, res) => {
+  const key = `${req.params.clientId}:${req.params.agentName}`;
+  const controller = runningAgents.get(key);
+  if (controller) {
+    controller.abort();
+    runningAgents.delete(key);
+    res.json({ stopped: true });
+  } else {
+    res.json({ stopped: false, message: 'Agent is not currently running' });
+  }
+});
+
+// Update agent schedule
+app.put('/api/schedule/:clientId/:agentName', (req, res) => {
+  const { clientId, agentName } = req.params;
+  const { schedule, enabled } = req.body;
+  const configPath = path.join(CLIENTS_DIR, `${clientId}.json`);
+
+  if (!fs.existsSync(configPath)) return res.status(404).json({ error: 'Client not found' });
+
+  const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+  if (!config.agents?.[agentName]) return res.status(404).json({ error: 'Agent not found' });
+
+  if (schedule !== undefined) config.agents[agentName].schedule = schedule;
+  if (enabled !== undefined) config.agents[agentName].enabled = enabled;
+
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+  res.json({ updated: true, agent: config.agents[agentName] });
+});
+
+// List running agents
+app.get('/api/running', (req, res) => {
+  const running = [];
+  for (const [key] of runningAgents) {
+    const [clientId, agentName] = key.split(':');
+    running.push({ clientId, agentName });
+  }
+  res.json({ running });
 });
 
 // ── HTML UI ──────────────────────────────────────────────────────────────────
