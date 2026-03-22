@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { addToast } from '@/components/toast';
+import { DocumentViewer } from '@/components/document-viewer';
 import { clsx } from 'clsx';
 import {
   FileText,
@@ -128,6 +129,7 @@ const statusStyles: Record<string, string> = {
 export default function DocumentsPage() {
   const [filter, setFilter] = useState<DocType>('all');
   const [search, setSearch] = useState('');
+  const [viewingDoc, setViewingDoc] = useState<typeof documents[0] | null>(null);
 
   const filtered = documents.filter(doc => {
     if (filter !== 'all' && doc.type !== filter) return false;
@@ -181,7 +183,8 @@ export default function DocumentsPage() {
           return (
             <div
               key={doc.id}
-              className="bg-surface-raised border border-surface-border rounded-xl p-4 hover:border-brand-500/30 transition-all group"
+              className="bg-surface-raised border border-surface-border rounded-xl p-4 hover:border-brand-500/30 transition-all group cursor-pointer"
+              onClick={() => setViewingDoc(doc)}
             >
               <div className="flex items-center gap-4">
                 {/* Icon */}
@@ -223,7 +226,7 @@ export default function DocumentsPage() {
                 {/* Actions */}
                 <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                   <button
-                    onClick={() => addToast(`Opening ${doc.name}`, 'info')}
+                    onClick={() => setViewingDoc(doc)}
                     className="p-2 rounded-lg text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20"
                     title="View"
                   >
@@ -265,6 +268,13 @@ export default function DocumentsPage() {
           </div>
         )}
       </div>
+
+      {viewingDoc && (
+        <DocumentViewer
+          doc={viewingDoc}
+          onClose={() => setViewingDoc(null)}
+        />
+      )}
     </div>
   );
 }
