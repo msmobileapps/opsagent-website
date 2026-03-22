@@ -1,46 +1,52 @@
 'use client';
 
 import { useState } from 'react';
-import { agents as initialAgents, executionLogs } from '@/lib/mock-data';
+import { agents as mockAgents, executionLogs } from '@/lib/mock-data';
 import { Agent } from '@/lib/types';
+import { useApi } from '@/lib/use-api';
 import { AgentCard } from '@/components/agent-card';
 import { AgentDetail } from '@/components/agent-detail';
 import { ScheduleModal } from '@/components/schedule-modal';
 import { addToast } from '@/components/toast';
-import { Plus, MessageSquare } from 'lucide-react';
+import { Plus, MessageSquare, Wifi, WifiOff } from 'lucide-react';
 
 export default function AgentsPage() {
-  const [agents, setAgents] = useState<Agent[]>(initialAgents);
+  const api = useApi();
+  const agents = api.connected ? api.agents : mockAgents;
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [runOutput, setRunOutput] = useState<string[]>([]);
 
-  const handleStart = (id: string) => {
-    setAgents(prev => {
-      const updated = prev.map(a =>
-        a.id === id ? { ...a, status: 'running' as const, lastRun: new Date().toISOString() } : a
-      );
-      // Update selectedAgent if it's the one being started
-      if (selectedAgent?.id === id) {
-        setSelectedAgent(updated.find(a => a.id === id) || null);
-      }
-      return updated;
-    });
+  const handleStart = async (id: string) => {
     const agent = agents.find(a => a.id === id);
-    addToast(`${agent?.name} started`, 'success');
+    if (!agent) return;
+
+    if (api.connected) {
+      addToast(`Starting ${agent.name}...`, 'info');
+      setRunOutput([]);
+      const output = await api.runAgent(id, (msg) => {
+        setRunOutput(prev => [...prev, msg]);
+      });
+      if (output) {
+        addToast(`${agent.name} completed successfully`, 'success');
+      } else {
+        addToast(`${agent.name} finished with errors`, 'error');
+      }
+    } else {
+      addToast(`${agent.name} started (demo mode)`, 'success');
+    }
   };
 
-  const handleStop = (id: string) => {
-    setAgents(prev => {
-      const updated = prev.map(a =>
-        a.id === id ? { ...a, status: 'idle' as const } : a
-      );
-      if (selectedAgent?.id === id) {
-        setSelectedAgent(updated.find(a => a.id === id) || null);
-      }
-      return updated;
-    });
+  const handleStop = async (id: string) => {
     const agent = agents.find(a => a.id === id);
-    addToast(`${agent?.name} stopped`, 'info');
+    if (!agent) return;
+
+    if (api.connected) {
+      const stopped = await api.stopAgent(id);
+      addToast(stopped ? `${agent.name} stopped` : `${agent.name} is not running`, stopped ? 'info' : 'error');
+    } else {
+      addToast(`${agent.name} stopped (demo mode)`, 'info');
+    }
   };
 
   const handleEditSchedule = (id: string) => {
@@ -48,17 +54,12 @@ export default function AgentsPage() {
     if (agent) setEditingAgent(agent);
   };
 
-  const handleSaveSchedule = (schedule: string) => {
+  const handleSaveSchedule = async (schedule: string) => {
     if (!editingAgent) return;
-    setAgents(prev => {
-      const updated = prev.map(a =>
-        a.id === editingAgent.id ? { ...a, schedule } : a
-      );
-      if (selectedAgent?.id === editingAgent.id) {
-        setSelectedAgent(updated.find(a => a.id === editingAgent.id) || null);
-      }
-      return updated;
-    });
+
+    if (api.connected) {
+      await api.updateSchedule(editingAgent.id, schedule);
+    }
     addToast(`${editingAgent.name} schedule updated to: ${schedule}`, 'success');
     setEditingAgent(null);
   };
@@ -70,9 +71,19 @@ export default function AgentsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Agent Monitoring</h1>
-        <p className="text-sm text-gray-500 mt-1">Click an agent to view output and manage schedule</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Agent Monitoring</h1>
+          <p className="text-sm text-gray-500 mt-1">Click an agent to view output and manage schedule</p>
+        </div>
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border ${
+          api.connected
+            ? 'text-accent-400 bg-accent-500/10 border-accent-500/20'
+            : 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20'
+        }`}>
+          {api.connected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+          {api.connected ? `Live — ${api.clientName}` : 'Demo Mode'}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

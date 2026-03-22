@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { agents as initialAgents, executionLogs } from '@/lib/mock-data';
+import { agents as mockAgents, executionLogs } from '@/lib/mock-data';
+import { useApi } from '@/lib/use-api';
 import { addToast } from '@/components/toast';
 import { useDocViewer } from '@/components/doc-context';
 import {
@@ -159,9 +160,11 @@ const actionFeedback: Record<string, { message: string; type: 'success' | 'info'
 
 export default function OverviewPage() {
   const { openDoc } = useDocViewer();
+  const api = useApi();
+  const agents = api.connected ? api.agents : mockAgents;
   const [attentionItems, setAttentionItems] = useState(initialAttentionItems);
   const [completedActions, setCompletedActions] = useState<Record<string, string[]>>({});
-  const running = initialAgents.filter(a => a.status === 'running').length;
+  const running = agents.filter(a => a.status === 'running').length;
   const todayLogs = executionLogs.filter(l => l.startedAt.startsWith('2026-03-21'));
   const successRate = Math.round(
     (executionLogs.filter(l => l.status === 'success').length / executionLogs.length) * 100
@@ -217,7 +220,7 @@ export default function OverviewPage() {
 
       {/* Stats row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard icon={Zap} label="Active Agents" value={initialAgents.length} sub="Across 5 departments" />
+        <StatCard icon={Zap} label="Active Agents" value={agents.length} sub={api.connected ? `Live — ${api.clientName}` : 'Demo mode'} />
         <StatCard icon={Activity} label="Running Now" value={running} sub={running > 0 ? 'Processing tasks' : 'All idle'} />
         <StatCard icon={CheckCircle2} label="Today's Runs" value={todayLogs.length} sub="Completed today" />
         <StatCard icon={Clock} label="Success Rate" value={`${successRate}%`} sub="Last 30 days" />
