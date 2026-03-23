@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSApps Case Study — OpsAgent</title>
+    <meta name="description" content="How MSApps automated their entire operations with OpsAgent — from lead management to invoicing, recruiting, and content.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6C3AED;
+            --primary-light: #8B5CF6;
+            --bg-dark: #0D0D1A;
+            --bg-card: #13132B;
+            --bg-section: #0F0F22;
+            --gray-200: #E5E7EB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --green: #10B981;
+            --green-light: #34D399;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: var(--gray-200);
+            line-height: 1.6;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(13,13,26,0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(108,58,237,0.15);
+        }
+        .nav-logo {
+            font-size: 1.3rem; font-weight: 800; color: white; text-decoration: none;
+            background: linear-gradient(135deg, #fff 0%, #C4B5FD 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { color: var(--gray-400); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .nav-links a:hover { color: white; }
+        .nav-cta {
+            padding: 0.5rem 1.2rem; background: var(--primary); color: white;
+            border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            transition: background 0.2s;
+        }
+        .nav-cta:hover { background: var(--primary-light); }
+
+        /* HERO */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108,58,237,0.18) 0%, transparent 70%);
+        }
+        .hero-badge {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            background: rgba(108,58,237,0.15);
+            border: 1px solid rgba(108,58,237,0.35);
+            border-radius: 50px;
+            font-size: 0.8rem; font-weight: 600; color: #C4B5FD;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 900; line-height: 1.15;
+            color: white; max-width: 800px; margin: 0 auto 1.5rem;
+        }
+        .hero h1 span {
+            background: linear-gradient(135deg, #A78BFA, #34D399);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub {
+            font-size: 1.15rem; color: var(--gray-400);
+            max-width: 600px; margin: 0 auto 3rem;
+        }
+
+        /* METRICS ROW */
+        .metrics-row {
+            display: flex; justify-content: center; gap: 1rem;
+            flex-wrap: wrap; margin-bottom: 3rem;
+        }
+        .metric-pill {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 1.25rem 2rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(108,58,237,0.25);
+            border-radius: 16px;
+            min-width: 130px;
+        }
+        .metric-pill .val {
+            font-size: 2rem; font-weight: 900; color: white;
+            background: linear-gradient(135deg, #A78BFA, #34D399);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .metric-pill .lbl { font-size: 0.78rem; color: var(--gray-400); text-align: center; margin-top: 0.2rem; }
+
+        /* DIVIDER */
+        .divider { width: 60px; height: 3px; background: linear-gradient(135deg, var(--primary), var(--green)); border-radius: 2px; margin: 0 auto 2rem; }
+
+        /* SECTION */
+        section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
+        section h2 { font-size: 1.75rem; font-weight: 800; color: white; margin-bottom: 1rem; }
+        section p { color: var(--gray-400); font-size: 1.05rem; margin-bottom: 1.2rem; line-height: 1.75; }
+
+        /* QUOTE BLOCK */
+        .quote-block {
+            margin: 2rem 0;
+            padding: 1.75rem 2rem;
+            background: var(--bg-card);
+            border-left: 4px solid var(--primary-light);
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            color: var(--gray-200);
+            font-size: 1.08rem;
+            line-height: 1.7;
+        }
+        .quote-block cite {
+            display: block; margin-top: 0.75rem;
+            font-style: normal; font-size: 0.85rem;
+            color: var(--primary-light); font-weight: 600;
+        }
+
+        /* AGENT CARDS */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem; margin: 2rem 0;
+        }
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(108,58,237,0.2);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .agent-card:hover { border-color: rgba(108,58,237,0.5); transform: translateY(-2px); }
+        .agent-card .icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+        .agent-card h3 { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 0.4rem; }
+        .agent-card p { font-size: 0.85rem; color: var(--gray-400); line-height: 1.55; margin: 0; }
+        .agent-card .saved {
+            margin-top: 0.75rem; font-size: 0.78rem; font-weight: 700;
+            color: var(--green-light);
+            background: rgba(16,185,129,0.1); border-radius: 6px;
+            padding: 0.2rem 0.6rem; display: inline-block;
+        }
+
+        /* TIMELINE */
+        .timeline { margin: 2rem 0; position: relative; }
+        .timeline::before {
+            content: ''; position: absolute; left: 18px; top: 0; bottom: 0;
+            width: 2px; background: linear-gradient(to bottom, var(--primary), var(--green));
+            opacity: 0.3;
+        }
+        .timeline-item {
+            display: flex; gap: 1.5rem; margin-bottom: 2rem; position: relative;
+        }
+        .timeline-dot {
+            flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; z-index: 1;
+        }
+        .timeline-content h3 { font-size: 1rem; font-weight: 700; color: white; margin-bottom: 0.3rem; }
+        .timeline-content p { font-size: 0.9rem; color: var(--gray-400); margin: 0; line-height: 1.6; }
+
+        /* RESULTS SECTION */
+        .results-section {
+            background: var(--bg-section);
+            border-top: 1px solid rgba(108,58,237,0.1);
+            border-bottom: 1px solid rgba(108,58,237,0.1);
+            padding: 4rem 2rem;
+        }
+        .results-inner { max-width: 900px; margin: 0 auto; }
+        .results-inner h2 { font-size: 1.75rem; font-weight: 800; color: white; margin-bottom: 2rem; }
+        .results-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .result-card {
+            background: rgba(16,185,129,0.06);
+            border: 1px solid rgba(16,185,129,0.2);
+            border-radius: 14px; padding: 1.25rem 1.5rem; text-align: center;
+        }
+        .result-card .val {
+            font-size: 2.2rem; font-weight: 900; color: var(--green-light);
+            display: block; margin-bottom: 0.3rem;
+        }
+        .result-card .lbl { font-size: 0.82rem; color: var(--gray-400); }
+
+        /* CTA SECTION */
+        .cta-section {
+            text-align: center; padding: 5rem 2rem;
+            background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(108,58,237,0.12) 0%, transparent 70%);
+        }
+        .cta-section h2 { font-size: 2rem; font-weight: 900; color: white; margin-bottom: 1rem; }
+        .cta-section p { color: var(--gray-400); max-width: 480px; margin: 0 auto 2rem; }
+        .btn-primary {
+            display: inline-block; padding: 0.9rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; text-decoration: none; border-radius: 12px;
+            font-weight: 700; font-size: 1rem;
+            box-shadow: 0 4px 20px rgba(108,58,237,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,58,237,0.5); }
+        .btn-secondary {
+            display: inline-block; padding: 0.9rem 2rem;
+            background: transparent; color: var(--gray-400);
+            text-decoration: none; border-radius: 12px;
+            font-weight: 600; font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-left: 1rem; transition: color 0.2s, border-color 0.2s;
+        }
+        .btn-secondary:hover { color: white; border-color: rgba(255,255,255,0.25); }
+
+        /* FOOTER */
+        footer {
+            text-align: center; padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--gray-500); font-size: 0.85rem;
+        }
+        footer a { color: var(--primary-light); text-decoration: none; }
+
+        /* SEPARATOR */
+        .sep { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 0; }
+
+        @media (max-width: 640px) {
+            .nav-links { display: none; }
+            .metrics-row .metric-pill { min-width: 100px; padding: 1rem 1.25rem; }
+            .btn-secondary { margin-left: 0; margin-top: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-logo">OpsAgent</a>
+    <div class="nav-links">
+        <a href="/#agents">Agents</a>
+        <a href='/integrations'>Integrations</a>
+        <a href="/#pricing">Pricing</a>
+    </div>
+    <a class='nav-cta' href='/intake'>Map My Operations →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-badge">📋 Real Customer · Real Company · Real Numbers</div>
+    <h1>How MSApps Runs Their Entire Business <span>on Autopilot</span></h1>
+    <p class="hero-sub">A mobile & web development agency that built OpsAgent to run their own operations — and never looked back.</p>
+    <div class="metrics-row">
+        <div class="metric-pill"><span class="val">125+</span><span class="lbl">hours saved<br>per week</span></div>
+        <div class="metric-pill"><span class="val">60</span><span class="lbl">hrs/month<br>on invoicing alone</span></div>
+        <div class="metric-pill"><span class="val">18</span><span class="lbl">AI agents<br>running 24/7</span></div>
+        <div class="metric-pill"><span class="val">0</span><span class="lbl">manual<br>reports</span></div>
+    </div>
+</div>
+
+<hr class="sep">
+
+<!-- BACKGROUND -->
+<section>
+    <div class="divider"></div>
+    <h2>The Company</h2>
+    <p>MSApps is a boutique mobile and web development agency that designs and builds apps for startups and growing businesses. With a lean team and a fast-moving pipeline, the founders found themselves drowning in operational overhead — managing leads, chasing invoices, reviewing candidates, posting content, and reconciling receipts — all manually, all the time.</p>
+    <p>They weren't struggling with the work itself. They were struggling with everything <em>around</em> the work.</p>
+    <div class="quote-block">
+        "We were spending more time managing the business than building products. Every Monday started with a stack of tasks that had nothing to do with what we were actually good at."
+        <cite>— Michal Shatz, Founder, MSApps</cite>
+    </div>
+</section>
+
+<hr class="sep">
+
+<!-- THE CHALLENGE -->
+<section>
+    <div class="divider"></div>
+    <h2>The Challenge</h2>
+    <p>MSApps had already adopted a range of modern tools — Zoho Mail, Google Calendar, Notion, Monday.com, LinkedIn, iCount, and Toggl — but each tool sat in its own silo. There was no connective tissue. Every handoff between tools was a manual task.</p>
+    <p>The specific pain points were clear:</p>
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-dot">📬</div>
+            <div class="timeline-content">
+                <h3>Lead follow-up was falling through the cracks</h3>
+                <p>Leads lived in Google Calendar events with no consistent status tracking, no follow-up reminders, and no pipeline visibility.</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot">🧾</div>
+            <div class="timeline-content">
+                <h3>End-of-month invoicing was a 3-hour ordeal</h3>
+                <p>Hours had to be pulled from Toggl, matched to clients, and manually entered into iCount — every single month, without fail.</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot">👥</div>
+            <div class="timeline-content">
+                <h3>Recruiting was scattered across platforms</h3>
+                <p>Job posts needed to go live on multiple boards simultaneously. Candidate emails piled up with no triage. Good candidates went cold.</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot">🔗</div>
+            <div class="timeline-content">
+                <h3>LinkedIn presence was inconsistent</h3>
+                <p>There was a clear outreach strategy — but no bandwidth to execute it consistently. Posting, following up, and tracking replies all fell to the bottom of the list.</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-dot">📂</div>
+            <div class="timeline-content">
+                <h3>Receipt reconciliation was a monthly fire drill</h3>
+                <p>Bank transactions and credit card charges sat unmatched in iCount. Finding the right invoices in Zoho Mail took hours and was error-prone.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr class="sep">
+
+<!-- THE SOLUTION -->
+<section>
+    <div class="divider"></div>
+    <h2>The Solution: A Full Operations Stack</h2>
+    <p>MSApps deployed OpsAgent in a single onboarding session. Within days, 18 agents were live — each owning a specific operational domain and connected to the tools already in use.</p>
+    <div class="agent-grid">
+        <div class="agent-card">
+            <div class="icon">🎯</div>
+            <h3>Lead Management</h3>
+            <p>Tracks leads in Google Calendar, sends daily pipeline reports to Zoho Mail, and flags stale deals.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🔍</div>
+            <h3>Prospecting</h3>
+            <p>Finds new leads matching the ideal client profile, enriches contact data, and queues them for outreach.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🔗</div>
+            <h3>LinkedIn Outreach</h3>
+            <p>Finds target segments, writes personalized messages, sends outreach, and tracks replies in Notion.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">📄</div>
+            <h3>Proposals</h3>
+            <p>Generates professional proposals, tracks status per deal, and handles follow-ups automatically.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">💰</div>
+            <h3>Budgeting</h3>
+            <p>Tracks budget vs. actuals per project, flags scope creep early, and generates financial snapshots.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🧾</div>
+            <h3>Invoicing & Receipts</h3>
+            <p>Pulls hours from Toggl, creates invoices in iCount, and matches bank transactions to Zoho Mail invoices.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">👩‍💼</div>
+            <h3>Team & Time Tracking</h3>
+            <p>Monitors Toggl hours, tracks utilization per team member, and surfaces capacity gaps automatically.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">👥</div>
+            <h3>Recruiting</h3>
+            <p>Posts jobs across multiple platforms simultaneously. Scans CVs for technical fit, preps them for submission, manages the candidate pipeline, and handles client communication throughout.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">✍️</div>
+            <h3>Content & Social</h3>
+            <p>Writes weekly social posts for LinkedIn, Instagram, and Facebook, tailored to MSApps' tone and audience.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🤝</div>
+            <h3>Client Management</h3>
+            <p>Full visibility into every client relationship — open items, upcoming renewals, and satisfaction signals.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">📅</div>
+            <h3>Project Management</h3>
+            <p>Tracks milestones and deadlines across all client projects, with automatic status updates and blocker alerts.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">📧</div>
+            <h3>Email & Calendar</h3>
+            <p>Triages inbox across Gmail, Zoho Mail, and iMessage — drafts replies, schedules meetings, preps briefs.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🔍</div>
+            <h3>Code Review</h3>
+            <p>Automated review on every PR — catches bugs, enforces standards, and sends developer feedback summaries.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🔐</div>
+            <h3>Code Security</h3>
+            <p>Scans the codebase for vulnerabilities, exposed secrets, and dependency risks — continuously and automatically.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🖼️</div>
+            <h3>Digital Assets Health</h3>
+            <p>Monitors digital assets across platforms — detects broken links, expired content, and missing files before clients notice.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">⚙️</div>
+            <h3>Automations</h3>
+            <p>Custom workflow automations connecting all tools — built, monitored, and self-healing, with error alerts when something breaks.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🛡️</div>
+            <h3>Digital Assets Security</h3>
+            <p>Monitors access permissions, detects unauthorized changes, and flags suspicious activity across all digital assets and file storage.</p>
+        </div>
+        <div class="agent-card">
+            <div class="icon">🗂️</div>
+            <h3>Knowledge Base</h3>
+            <p>Stores and organizes all company knowledge, client documents, and code per client — searchable, structured, and always up to date.</p>
+        </div>
+    </div>
+</section>
+
+<hr class="sep">
+
+<!-- RESULTS -->
+<div class="results-section">
+    <div class="results-inner">
+        <div class="divider"></div>
+        <h2>The Results</h2>
+        <div class="results-grid">
+            <div class="result-card">
+                <span class="val">125+</span>
+                <span class="lbl">hours freed up every week</span>
+            </div>
+            <div class="result-card">
+                <span class="val">60 hrs</span>
+                <span class="lbl">saved every month on invoicing & receipts alone</span>
+            </div>
+            <div class="result-card">
+                <span class="val">4 hrs/day</span>
+                <span class="lbl">saved on lead management — every single day</span>
+            </div>
+            <div class="result-card">
+                <span class="val">4 hrs/day</span>
+                <span class="lbl">saved on prospecting — every single day</span>
+            </div>
+            <div class="result-card">
+                <span class="val">30 hrs</span>
+                <span class="lbl">saved per week on proposals</span>
+            </div>
+            <div class="result-card">
+                <span class="val">15 hrs</span>
+                <span class="lbl">saved per week on client management</span>
+            </div>
+            <div class="result-card">
+                <span class="val">15 hrs</span>
+                <span class="lbl">saved per week on project management</span>
+            </div>
+            <div class="result-card">
+                <span class="val">10 hrs</span>
+                <span class="lbl">saved per week on budgeting</span>
+            </div>
+            <div class="result-card">
+                <span class="val">9 hrs</span>
+                <span class="lbl">saved per week on LinkedIn outreach</span>
+            </div>
+            <div class="result-card">
+                <span class="val">10 hrs</span>
+                <span class="lbl">saved per week on team & time tracking</span>
+            </div>
+            <div class="result-card">
+                <span class="val">6 hrs</span>
+                <span class="lbl">saved per week on email & calendar</span>
+            </div>
+            <div class="result-card">
+                <span class="val">1 FTE</span>
+                <span class="lbl">recruiting replaced entirely — no recruiter on payroll</span>
+            </div>
+            <div class="result-card">
+                <span class="val">0</span>
+                <span class="lbl">missed invoices or leads ever again</span>
+            </div>
+            <div class="result-card">
+                <span class="val">10×</span>
+                <span class="lbl">more output per hour compared to before</span>
+            </div>
+            <div class="result-card">
+                <span class="val">3 hrs</span>
+                <span class="lbl">saved per week on content & social</span>
+            </div>
+            <div class="result-card">
+                <span class="val">$0</span>
+                <span class="lbl">extra headcount added despite scaling operations</span>
+            </div>
+        </div>
+        <div class="quote-block" style="margin-top: 2.5rem;">
+            "An hour with OpsAgent gets me more done than a full day used to. It's not just that tasks happen automatically — it's that I'm thinking clearer, moving faster, and nothing falls through the cracks anymore."
+            <cite>— Michal Shatz, Founder, MSApps</cite>
+        </div>
+    </div>
+</div>
+
+<!-- SETUP -->
+<section>
+    <div class="divider"></div>
+    <h2>How Fast Was Setup?</h2>
+    <p>The entire onboarding — mapping workflows, connecting tools, and deploying agents — took under a week. There was no engineering work required on MSApps' side. OpsAgent connected to their existing tools through secure API integrations.</p>
+    <p>The 5-minute mapping session at the start of onboarding was the most important step. That's where OpsAgent understood which workflows to own, what the edge cases were, and how to escalate decisions that required human judgment.</p>
+    <p>Everything else was configured, tested, and running before the end of the first week.</p>
+</section>
+
+<hr class="sep">
+
+<!-- CTA -->
+<div class="cta-section">
+    <h2>Your Operations Could Run Like This Too</h2>
+    <p>Map your workflows in 5 minutes. We'll show you exactly which agents apply to your business — before you commit to anything.</p>
+    <a class='btn-primary' href='/intake'>Start Your Operations Map →</a>
+    <a href="/" class="btn-secondary">Back to OpsAgent</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2025 OpsAgent · Built by <a href="https://msapps.mobi" target="_blank">MSApps</a> · <a href='/intake'>Get Started</a></p>
+</footer>
+
+</body>
+</html>

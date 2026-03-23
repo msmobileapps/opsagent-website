@@ -2,6 +2,7 @@ import { query } from '@anthropic-ai/claude-agent-sdk';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getCalendarContext } from './gcal.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const AGENTS_DIR = path.join(__dirname, '..', 'agents');
@@ -24,7 +25,9 @@ export async function runAgent(clientConfig, agentName, onProgress) {
   const agentTemplate = fs.readFileSync(agentPath, 'utf-8');
   const agentConfig = clientConfig.agents?.[agentName] ?? {};
   const systemPrompt = injectClientContext(agentTemplate, clientConfig);
-  const userPrompt = buildUserPrompt(agentName, clientConfig, agentConfig);
+  // Pre-fetch live data for agents that need it
+  const liveData = await fetchLiveData(agentName, clientConfig);
+  const userPrompt = buildUserPrompt(agentName, clientConfig, agentConfig, liveData);
 
   console.log(`  [${clientConfig.id}] ${agentName} — launching Claude agent...`);
 
@@ -47,23 +50,31 @@ export async function runAgent(clientConfig, agentName, onProgress) {
 
   let result = '';
   let stopReason = '';
+  let totalCost = 0;
+  let usage = {};
   const startTime = Date.now();
 
   for await (const message of query({ prompt: userPrompt, options })) {
     // Result message — the final output
-    if ('result' in message) {
+    if (message.type === 'result') {
       result = message.result;
       stopReason = message.stop_reason ?? 'end_turn';
+      if (message.total_cost_usd != null) {
+        totalCost = message.total_cost_usd;
+      }
+      if (message.usage) {
+        usage = message.usage;
+      }
     }
 
     // System init message
     if (message.type === 'system' && message.subtype === 'init') {
-      if (onProgress) onProgress({ type: 'init', sessionId: message.data?.session_id });
+      if (onProgress) onProgress({ type: 'init', sessionId: message.session_id });
     }
 
     // Assistant intermediate messages — stream text
-    if (message.type === 'assistant' || ('content' in message && Array.isArray(message.content))) {
-      const blocks = message.content ?? [];
+    if (message.type === 'assistant' && message.message?.content) {
+      const blocks = message.message.content;
       for (const block of blocks) {
         if (block.type === 'text' && block.text && onProgress) {
           onProgress({ type: 'text', text: block.text });
@@ -73,6 +84,8 @@ export async function runAgent(clientConfig, agentName, onProgress) {
         }
       }
     }
+
+    // Skip rate_limit_event and other message types silently
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -86,8 +99,13 @@ export async function runAgent(clientConfig, agentName, onProgress) {
     output: result,
     elapsed,
     stopReason,
-    // Agent SDK doesn't expose token counts directly; estimate from output length
-    usage: { input_tokens: 0, output_tokens: Math.ceil(result.length / 4) },
+    totalCost,
+    usage: {
+      input_tokens: usage.input_tokens ?? 0,
+      output_tokens: usage.output_tokens ?? 0,
+      cache_read_input_tokens: usage.cache_read_input_tokens ?? 0,
+      cache_creation_input_tokens: usage.cache_creation_input_tokens ?? 0,
+    },
   };
 }
 
@@ -98,7 +116,14 @@ export async function runAgent(clientConfig, agentName, onProgress) {
 function loadMcpServers() {
   if (!fs.existsSync(MCP_CONFIG)) return {};
   try {
-    return JSON.parse(fs.readFileSync(MCP_CONFIG, 'utf-8'));
+    const raw = JSON.parse(fs.readFileSync(MCP_CONFIG, 'utf-8'));
+    // Filter out non-server entries (comments, examples, etc.)
+    const servers = {};
+    for (const [key, value] of Object.entries(raw)) {
+      if (key.startsWith('_') || typeof value !== 'object' || !value.command) continue;
+      servers[key] = value;
+    }
+    return servers;
   } catch (e) {
     console.warn('  Warning: Failed to load mcp-servers.json:', e.message);
     return {};
@@ -115,7 +140,31 @@ function injectClientContext(template, cfg) {
     .replace(/\{\{contact_email\}\}/g, cfg.contact_email ?? '');
 }
 
-function buildUserPrompt(agentName, clientConfig, agentConfig) {
+/**
+ * Pre-fetch live data from integrations (Google Calendar, etc.)
+ * based on the agent type. Returns markdown text or null.
+ */
+async function fetchLiveData(agentName, clientConfig) {
+  const timezone = clientConfig.timezone ?? 'Asia/Jerusalem';
+  const sections = [];
+
+  // Agents that need calendar data
+  if (['lead-pipeline', 'invoicing'].includes(agentName)) {
+    try {
+      const calData = await getCalendarContext({ daysBack: 30, daysForward: 14, timezone });
+      if (calData) {
+        sections.push(calData);
+        console.log(`  [${clientConfig.id}] ${agentName} — fetched live calendar data`);
+      }
+    } catch (err) {
+      console.warn(`  [${clientConfig.id}] ${agentName} — calendar fetch failed: ${err.message}`);
+    }
+  }
+
+  return sections.length > 0 ? sections.join('\n\n') : null;
+}
+
+function buildUserPrompt(agentName, clientConfig, agentConfig, liveData = null) {
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
     timeZone: clientConfig.timezone ?? 'Asia/Jerusalem',
@@ -125,12 +174,18 @@ function buildUserPrompt(agentName, clientConfig, agentConfig) {
     .map(([k, v]) => `- **${k}**: ${v}`)
     .join('\n');
 
-  return `**Today:** ${today}
+  let prompt = `**Today:** ${today}
 
 **Run agent:** \`${agentName}\` for client **${clientConfig.name}**
 
 **Agent context:**
-${contextLines || '_(no additional context)_'}
+${contextLines || '_(no additional context)_'}`;
 
-Execute this agent workflow. Use all available tools to gather real data, take actions, and produce a detailed briefing with outcomes.`;
+  if (liveData) {
+    prompt += `\n\n---\n\n## Live Data (pre-fetched)\n\n${liveData}`;
+  }
+
+  prompt += `\n\nExecute this agent workflow. Analyze the live data provided above (if any), take actions, and produce a detailed briefing with outcomes.`;
+
+  return prompt;
 }
