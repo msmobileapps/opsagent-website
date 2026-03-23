@@ -7,11 +7,18 @@ import {
   getRunningAgents,
   getLogDates,
   getLog,
+  getParsedLog,
+  getHistory,
+  getDocuments,
+  getApprovals,
+  resolveApproval as apiResolveApproval,
   stopAgent as apiStopAgent,
   updateSchedule as apiUpdateSchedule,
   runAgentStream,
   ApiAgentStatus,
+  Approval,
 } from './api';
+import { ExecutionLog, OutputItem } from './types';
 
 // Agent metadata not available from the API — enriches raw data
 const agentMeta: Record<string, { department: string; description: string; icon: string }> = {
@@ -103,6 +110,11 @@ export interface UseApiResult {
   updateSchedule: (agentId: string, schedule?: string, enabled?: boolean) => Promise<void>;
   getAgentLogs: (agentId: string) => Promise<string[]>;
   getAgentLog: (agentId: string, date: string) => Promise<string>;
+  getParsedAgentLog: (agentId: string, date: string) => Promise<ExecutionLog>;
+  getExecutionHistory: () => Promise<ExecutionLog[]>;
+  getAgentDocuments: () => Promise<(OutputItem & { agentName: string; date: string; id: string })[]>;
+  getApprovalsList: (status?: string) => Promise<Approval[]>;
+  resolveApproval: (approvalId: string, decision: 'approve' | 'deny') => Promise<Approval>;
 }
 
 export function useApi(): UseApiResult {
@@ -187,6 +199,29 @@ export function useApi(): UseApiResult {
     return getLog('msapps', agentId, date);
   }, []);
 
+  const getParsedAgentLogFn = useCallback(async (agentId: string, date: string): Promise<ExecutionLog> => {
+    return getParsedLog('msapps', agentId, date);
+  }, []);
+
+  const getExecutionHistoryFn = useCallback(async (): Promise<ExecutionLog[]> => {
+    const data = await getHistory('msapps');
+    return data.logs;
+  }, []);
+
+  const getAgentDocumentsFn = useCallback(async () => {
+    const data = await getDocuments('msapps');
+    return data.documents;
+  }, []);
+
+  const getApprovalsListFn = useCallback(async (status?: string): Promise<Approval[]> => {
+    const data = await getApprovals('msapps', status);
+    return data.approvals;
+  }, []);
+
+  const resolveApprovalFn = useCallback(async (approvalId: string, decision: 'approve' | 'deny'): Promise<Approval> => {
+    return apiResolveApproval('msapps', approvalId, decision);
+  }, []);
+
   return {
     connected,
     loading,
@@ -198,5 +233,10 @@ export function useApi(): UseApiResult {
     updateSchedule: updateScheduleFn,
     getAgentLogs: getAgentLogsFn,
     getAgentLog: getAgentLogFn,
+    getParsedAgentLog: getParsedAgentLogFn,
+    getExecutionHistory: getExecutionHistoryFn,
+    getAgentDocuments: getAgentDocumentsFn,
+    getApprovalsList: getApprovalsListFn,
+    resolveApproval: resolveApprovalFn,
   };
 }

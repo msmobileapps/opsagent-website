@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { runAgent } from './runner.js';
 import { saveLog, listLogs, readLog } from './logger.js';
+import { parseAgentOutput, buildExecutionLog } from './output-parser.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENTS_DIR = path.join(__dirname, '..', 'clients');
@@ -163,6 +164,130 @@ app.put('/api/schedule/:clientId/:agentName', (req, res) => {
 
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   res.json({ updated: true, agent: config.agents[agentName] });
+});
+
+// Get parsed/structured output for a specific log
+app.get('/api/logs/:clientId/:agentName/:date/parsed', (req, res) => {
+  const { clientId, agentName, date } = req.params;
+  const content = readLog(clientId, agentName, date);
+  if (!content) return res.status(404).json({ error: 'Log not found' });
+
+  const executionLog = buildExecutionLog(clientId, agentName, date, content);
+  res.json(executionLog);
+});
+
+// Get all parsed execution logs for a client (history)
+app.get('/api/history/:clientId', (req, res) => {
+  const { clientId } = req.params;
+  const client = loadClients().find(c => c.id === clientId);
+  if (!client) return res.status(404).json({ error: 'Client not found' });
+
+  const logs = [];
+  for (const agentName of Object.keys(client.agents ?? {})) {
+    const dates = listLogs(clientId, agentName);
+    for (const file of dates.slice(0, 5)) { // last 5 per agent
+      const date = file.replace('.md', '');
+      const content = readLog(clientId, agentName, date);
+      if (content) {
+        const entry = buildExecutionLog(clientId, agentName, date, content);
+        if (entry) logs.push(entry);
+      }
+    }
+  }
+
+  // Sort by date descending
+  logs.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+  res.json({ logs });
+});
+
+// Documents endpoint — list generated documents from agent outputs
+app.get('/api/documents/:clientId', (req, res) => {
+  const { clientId } = req.params;
+  const client = loadClients().find(c => c.id === clientId);
+  if (!client) return res.status(404).json({ error: 'Client not found' });
+
+  const documents = [];
+  for (const agentName of Object.keys(client.agents ?? {})) {
+    const dates = listLogs(clientId, agentName);
+    for (const file of dates.slice(0, 10)) {
+      const date = file.replace('.md', '');
+      const content = readLog(clientId, agentName, date);
+      if (content) {
+        const parsed = parseAgentOutput(content, agentName);
+        const docSection = parsed.find(s => s.type === 'documents');
+        if (docSection?.items.length > 0) {
+          for (const doc of docSection.items) {
+            documents.push({
+              ...doc,
+              agentName,
+              date,
+              id: `${clientId}-${agentName}-${date}-${documents.length}`,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  res.json({ documents });
+});
+
+// ── Approvals ────────────────────────────────────────────────────────────────
+
+// In-memory approval queue (persists in process lifetime)
+const approvalQueue = [];
+let approvalIdCounter = 1;
+
+// List pending approvals
+app.get('/api/approvals/:clientId', (req, res) => {
+  const { clientId } = req.params;
+  const { status } = req.query; // 'pending' | 'approved' | 'denied' | 'all'
+  let filtered = approvalQueue.filter(a => a.clientId === clientId);
+  if (status && status !== 'all') {
+    filtered = filtered.filter(a => a.status === status);
+  }
+  filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  res.json({ approvals: filtered });
+});
+
+// Create an approval request (called by agent runner)
+app.post('/api/approvals/:clientId', (req, res) => {
+  const { clientId } = req.params;
+  const { agentName, action, description, riskLevel, estimatedCost } = req.body;
+
+  const approval = {
+    id: `apr-${approvalIdCounter++}`,
+    clientId,
+    agentName,
+    action,
+    description,
+    riskLevel: riskLevel || 'medium', // 'low' | 'medium' | 'high'
+    estimatedCost: estimatedCost || null,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    resolvedAt: null,
+    resolvedBy: null,
+  };
+
+  approvalQueue.push(approval);
+  res.json(approval);
+});
+
+// Approve or deny
+app.post('/api/approvals/:clientId/:approvalId/:decision', (req, res) => {
+  const { clientId, approvalId, decision } = req.params;
+  if (!['approve', 'deny'].includes(decision)) {
+    return res.status(400).json({ error: 'Decision must be approve or deny' });
+  }
+
+  const approval = approvalQueue.find(a => a.id === approvalId && a.clientId === clientId);
+  if (!approval) return res.status(404).json({ error: 'Approval not found' });
+
+  approval.status = decision === 'approve' ? 'approved' : 'denied';
+  approval.resolvedAt = new Date().toISOString();
+  approval.resolvedBy = 'dashboard-user';
+
+  res.json(approval);
 });
 
 // List running agents
