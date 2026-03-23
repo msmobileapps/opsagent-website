@@ -24,6 +24,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "dashboard", "run", "dev", "--", "-p", "3100"],
       "port": 3100
+    },
+    {
+      "name": "landing-page",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "8080", "."],
+      "port": 8080
     }
   ]
 }

@@ -955,6 +955,97 @@
     .form-lang[style*="display: none"] {
         opacity: 0;
     }
+
+    /* ===== LANGUAGE SWITCHING ===== */
+    [data-lang="he"] { display: none; }
+    [data-lang="en"] { display: initial; }
+
+    body.lang-he [data-lang="he"] { display: initial; }
+    body.lang-he [data-lang="en"] { display: none; }
+
+    /* Block-level elements need display:block not initial */
+    body.lang-he div[data-lang="he"],
+    body.lang-he section[data-lang="he"],
+    body.lang-he ul[data-lang="he"],
+    body.lang-he form[data-lang="he"] { display: block; }
+    body.lang-he .services-grid[data-lang="he"],
+    body.lang-he .problem-grid[data-lang="he"],
+    body.lang-he .steps[data-lang="he"],
+    body.lang-he .pricing-grid[data-lang="he"],
+    body.lang-he .integrations-grid[data-lang="he"],
+    body.lang-he .use-cases-grid[data-lang="he"],
+    body.lang-he .proof-card[data-lang="he"] { display: grid; }
+    body.lang-he .hero-inner[data-lang="he"] { display: grid; }
+    body.lang-he .hero-ctas[data-lang="he"],
+    body.lang-he .hero-stats[data-lang="he"],
+    body.lang-he .nav-links[data-lang="he"],
+    body.lang-he .footer-inner[data-lang="he"],
+    body.lang-he .footer-links[data-lang="he"],
+    body.lang-he .cta-buttons[data-lang="he"] { display: flex; }
+
+    body.lang-he div[data-lang="en"],
+    body.lang-he section[data-lang="en"],
+    body.lang-he ul[data-lang="en"],
+    body.lang-he form[data-lang="en"] { display: none; }
+    body.lang-he .services-grid[data-lang="en"],
+    body.lang-he .problem-grid[data-lang="en"],
+    body.lang-he .steps[data-lang="en"],
+    body.lang-he .pricing-grid[data-lang="en"],
+    body.lang-he .integrations-grid[data-lang="en"],
+    body.lang-he .use-cases-grid[data-lang="en"],
+    body.lang-he .proof-card[data-lang="en"],
+    body.lang-he .hero-inner[data-lang="en"],
+    body.lang-he .hero-ctas[data-lang="en"],
+    body.lang-he .hero-stats[data-lang="en"],
+    body.lang-he .nav-links[data-lang="en"],
+    body.lang-he .footer-inner[data-lang="en"],
+    body.lang-he .footer-links[data-lang="en"],
+    body.lang-he .cta-buttons[data-lang="en"] { display: none; }
+
+    /* RTL adjustments */
+    body.lang-he { direction: rtl; text-align: right; }
+    body.lang-he .section-header { text-align: center; }
+    body.lang-he .step { text-align: center; }
+    body.lang-he .hero-stat { text-align: center; }
+    body.lang-he .metric { text-align: center; }
+    body.lang-he .faq-question { text-align: right; }
+    body.lang-he .service-features li { flex-direction: row-reverse; }
+    body.lang-he .service-features li::before { content: '✓'; }
+    body.lang-he .pricing-features li { flex-direction: row-reverse; }
+    body.lang-he .agent-row { flex-direction: row-reverse; }
+    body.lang-he .agent-info { flex-direction: row-reverse; }
+    body.lang-he .nav-inner { flex-direction: row-reverse; }
+    body.lang-he .logo { flex-direction: row-reverse; }
+    body.lang-he .footer-inner[data-lang="he"] { flex-direction: row-reverse; }
+
+    .lang-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 8px;
+        padding: 0.2rem;
+        margin-left: 0.5rem;
+    }
+    .lang-toggle button {
+        background: transparent;
+        border: none;
+        color: rgba(255,255,255,0.6);
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .lang-toggle button.active {
+        background: rgba(255,255,255,0.2);
+        color: var(--white);
+    }
+    .lang-toggle button:hover { color: var(--white); }
+    #global-lang-toggle { margin-right: 0; margin-left: 0; }
+    body.lang-he #global-lang-toggle { margin-left: 0.5rem; margin-right: 0; }
     </style>
 </head>
 <body>
@@ -966,19 +1057,30 @@
             <div class="logo-icon">O</div>
             OpsAgent
         </a>
-        <div class="nav-links">
+        <div class="nav-links" data-lang="en">
             <a href="#services">Services</a>
             <a href="#how-it-works">How It Works</a>
             <a href="#integrations">Integrations</a>
             <a href="#pricing">Pricing</a>
             <a href="mailto:michal@msapps.mobi?subject=OpsAgent - Getting Started" class="btn btn-primary">Get Started</a>
         </div>
+        <div class="nav-links" data-lang="he">
+            <a href="#services">שירותים</a>
+            <a href="#how-it-works">איך זה עובד</a>
+            <a href="#integrations">אינטגרציות</a>
+            <a href="#pricing">תמחור</a>
+            <a href="mailto:michal@msapps.mobi?subject=OpsAgent - התחלה" class="btn btn-primary">התחל עכשיו</a>
+        </div>
+        <div class="lang-toggle" id="global-lang-toggle">
+            <button class="active" data-set-lang="en">EN</button>
+            <button data-set-lang="he">HE</button>
+        </div>
     </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-    <div class="hero-inner">
+    <div class="hero-inner" data-lang="en">
         <div>
             <div class="hero-badge">
                 <span class="dot"></span>
@@ -1009,17 +1111,53 @@
             <img src="img_overview.jpg" alt="OpsAgent Operations Dashboard — Live Dashboard" style="width:100%;border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,0.4);" loading="lazy">
         </div>
     </div>
+    <div class="hero-inner" data-lang="he">
+        <div class="hero-visual">
+            <img src="img_overview.jpg" alt="לוח בקרה של OpsAgent" style="width:100%;border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,0.4);" loading="lazy">
+        </div>
+        <div>
+            <div class="hero-badge">
+                <span class="dot"></span>
+                כעת בבטא פרטית
+            </div>
+            <h1>צוות התפעול שלך<br><span class="gradient-text">מונע בינה מלאכותית</span></h1>
+            <p>OpsAgent מחליף את הבק-אופיס שלך בסוכני AI שבאמת עובדים. ניהול לידים, מכירות, גיוס, פיננסים ותוכן — הכל אוטומטי, הכל נמדד לפי תוצאות.</p>
+            <div class="hero-ctas" style="justify-content:flex-end;">
+                <a href="mailto:michal@msapps.mobi?subject=OpsAgent - בקשת הדגמה" class="btn btn-primary btn-lg">קבעו הדגמה</a>
+                <a href="#services" class="btn btn-outline btn-lg">מה אנחנו מאטמטים</a>
+            </div>
+            <div class="hero-stats" style="justify-content:flex-end;">
+                <div class="hero-stat">
+                    <div class="number">96%</div>
+                    <div class="label">מרווח גולמי</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="number">6</div>
+                    <div class="label">מחלקות אוטומטיות</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="number">24/7</div>
+                    <div class="label">פעיל תמיד</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- PROBLEM -->
 <section class="problem" id="problem">
     <div class="section-inner">
-        <div class="section-header">
+        <div class="section-header" data-lang="en">
             <div class="section-label">The Problem</div>
             <h2>Your Back-Office Is Eating Your Profits</h2>
             <p>Service businesses spend 40–60% of revenue on operations that don't generate revenue.</p>
         </div>
-        <div class="problem-grid">
+        <div class="section-header" data-lang="he">
+            <div class="section-label">הבעיה</div>
+            <h2>הבק-אופיס שלך אוכל לך את הרווחים</h2>
+            <p>עסקי שירות מוציאים 40%–60% מההכנסות על תפעול שלא מייצר הכנסה.</p>
+        </div>
+        <div class="problem-grid" data-lang="en">
             <div class="problem-card fade-in">
                 <div class="icon">💸</div>
                 <h3>Expensive Headcount</h3>
@@ -1036,18 +1174,40 @@
                 <p>You're paying for 10+ SaaS tools that don't talk to each other. The $285B SaaSpocalypse proved this model is broken.</p>
             </div>
         </div>
+        <div class="problem-grid" data-lang="he">
+            <div class="problem-card fade-in">
+                <div class="icon">💸</div>
+                <h3>עלויות כוח אדם גבוהות</h3>
+                <p>גיוס מנהלי תפעול, מנהלי חשבונות, מגייסים ואנשי שיווק עולה $250K+ בשנה. רוב המשימות חוזרות על עצמן ומבוססות כללים.</p>
+            </div>
+            <div class="problem-card fade-in">
+                <div class="icon">🐌</div>
+                <h3>איטי ומועד לטעויות</h3>
+                <p>מעקב ידני אחרי לידים נופל בין הכיסאות. חשבוניות לא מתאימות. סינון מועמדים לוקח ימים במקום דקות.</p>
+            </div>
+            <div class="problem-card fade-in">
+                <div class="icon">📉</div>
+                <h3>ריבוי כלי SaaS</h3>
+                <p>אתם משלמים על 10+ כלי SaaS שלא מדברים אחד עם השני. מודל ה-SaaS השבור הוכיח את עצמו.</p>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- SERVICES -->
 <section id="services">
     <div class="section-inner">
-        <div class="section-header">
+        <div class="section-header" data-lang="en">
             <div class="section-label">What We Automate</div>
             <h2>Six Departments. One AI Operations Layer.</h2>
             <p>Every agent runs in production — not a demo, not a prototype. Battle-tested on a real business.</p>
         </div>
-        <div class="services-grid">
+        <div class="section-header" data-lang="he">
+            <div class="section-label">מה אנחנו מאטמטים</div>
+            <h2>שש מחלקות. שכבת תפעול AI אחת.</h2>
+            <p>כל סוכן רץ בפרודקשן — לא דמו, לא אב-טיפוס. מוכח על עסק אמיתי.</p>
+        </div>
+        <div class="services-grid" data-lang="en">
             <div class="service-card fade-in">
                 <div class="service-icon" style="background: rgba(108,58,237,0.1);">📊</div>
                 <h3>Lead Management</h3>
@@ -1115,18 +1275,91 @@
                 </ul>
             </div>
         </div>
+        <div class="services-grid" data-lang="he">
+            <div class="service-card fade-in">
+                <div class="service-icon" style="background: rgba(108,58,237,0.1);">📊</div>
+                <h3>ניהול לידים</h3>
+                <p>AI סורק את הפייפליין שלך יומית, מתעדף לידים, מפעיל מעקבים, ומספק תדריך בוקר.</p>
+                <ul class="service-features">
+                    <li>סריקת פייפליין יומית</li>
+                    <li>תעדוף לידים חכם</li>
+                    <li>רצפי מעקב אוטומטיים</li>
+                    <li>דוחות תדריך בוקר</li>
+                </ul>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon" style="background: rgba(16,185,129,0.1);">💼</div>
+                <h3>Outreach מכירות</h3>
+                <p>פנייה מותאמת אישית בלינקדאין בקנה מידה. סגמנטציה, הודעות, מעקב תגובות — הכל אוטומטי.</p>
+                <ul class="service-features">
+                    <li>סגמנטציה בלינקדאין</li>
+                    <li>הודעות מותאמות אישית</li>
+                    <li>מעקב תגובות</li>
+                    <li>עדכוני CRM</li>
+                </ul>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon" style="background: rgba(59,130,246,0.1);">🎯</div>
+                <h3>גיוס עובדים</h3>
+                <p>פרסום משרות במספר פלטפורמות, סינון מועמדים עם AI, ודירוג לפי התאמה.</p>
+                <ul class="service-features">
+                    <li>פרסום במספר פלטפורמות</li>
+                    <li>סינון מועמדים עם AI</li>
+                    <li>דירוג לפי ציון התאמה</li>
+                    <li>תיאום ראיונות</li>
+                </ul>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon" style="background: rgba(239,68,68,0.1);">🧾</div>
+                <h3>פיננסים וחשבוניות</h3>
+                <p>הפקת חשבוניות, התאמת קבלות לעסקאות, התאמת חשבונות בנק — אוטומטית.</p>
+                <ul class="service-features">
+                    <li>הפקת חשבוניות</li>
+                    <li>התאמת קבלות</li>
+                    <li>התאמת בנק</li>
+                    <li>דוחות חודשיים</li>
+                </ul>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon" style="background: rgba(245,158,11,0.1);">📝</div>
+                <h3>תוכן ורשתות חברתיות</h3>
+                <p>פוסטים יומיים בלינקדאין, אינסטגרם, פייסבוק ו-X. בשפת המותג, בזמן, באוטומט.</p>
+                <ul class="service-features">
+                    <li>פרסום במספר פלטפורמות</li>
+                    <li>עקביות שפת מותג</li>
+                    <li>לוח שנה לתוכן</li>
+                    <li>מעקב מעורבות</li>
+                </ul>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon" style="background: rgba(168,85,247,0.1);">📋</div>
+                <h3>תפעול פנימי</h3>
+                <p>דוחות סטטוס, תקשורת פנימית, יצירת מסמכים — כל מה שמחזיק את החברה שלך רצה.</p>
+                <ul class="service-features">
+                    <li>דוחות סטטוס</li>
+                    <li>יצירת מסמכים</li>
+                    <li>תקשורת צוותית</li>
+                    <li>תיעוד תהליכים</li>
+                </ul>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- HOW IT WORKS -->
 <section class="how-it-works" id="how-it-works">
     <div class="section-inner">
-        <div class="section-header">
+        <div class="section-header" data-lang="en">
             <div class="section-label" style="color: var(--primary-light);">How It Works</div>
             <h2>Live in Days, Not Months</h2>
             <p>We connect to your existing tools and deploy AI agents that start delivering results immediately.</p>
         </div>
-        <div class="steps">
+        <div class="section-header" data-lang="he">
+            <div class="section-label" style="color: var(--primary-light);">איך זה עובד</div>
+            <h2>באוויר תוך ימים, לא חודשים</h2>
+            <p>אנחנו מתחברים לכלים הקיימים שלך ומפעילים סוכני AI שמתחילים לספק תוצאות מיד.</p>
+        </div>
+        <div class="steps" data-lang="en">
             <div class="step fade-in">
                 <div class="step-number">1</div>
                 <h3>Discovery Call</h3>
@@ -1143,6 +1376,23 @@
                 <p>Leads managed. Invoices matched. Content published. You get a daily briefing of everything your AI team accomplished.</p>
             </div>
         </div>
+        <div class="steps" data-lang="he">
+            <div class="step fade-in">
+                <div class="step-number">1</div>
+                <h3>שיחת היכרות</h3>
+                <p>אנחנו ממפים את התפעול שלך ב-30 דקות. אילו מחלקות עולות לך הכי הרבה? איפה משימות נופלות בין הכיסאות?</p>
+            </div>
+            <div class="step fade-in">
+                <div class="step-number">2</div>
+                <h3>הפעלת סוכנים</h3>
+                <p>אנחנו מתחברים למייל, יומן, CRM וכלי הנהלת חשבונות שלך דרך OAuth מאובטח. סוכני AI עולים לאוויר תוך ימים.</p>
+            </div>
+            <div class="step fade-in">
+                <div class="step-number">3</div>
+                <h3>תוצאות מסופקות</h3>
+                <p>לידים מנוהלים. חשבוניות מותאמות. תוכן מפורסם. אתם מקבלים תדריך יומי של כל מה שצוות ה-AI שלכם השיג.</p>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -1150,9 +1400,15 @@
 <!-- INTEGRATIONS -->
 <section class="integrations" id="integrations">
   <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
-    <h2 style="text-align:center;margin-bottom:3rem;font-size:2.5rem;font-weight:700;">Powerful Integrations</h2>
-    <p style="text-align:center;max-width:800px;margin:0 auto 3rem;color:#94a3b8;font-size:1.1rem;">OpsAgent seamlessly connects with your existing tools and workflows</p>
-    <div class="integrations-grid">
+    <div data-lang="en">
+      <h2 style="text-align:center;margin-bottom:3rem;font-size:2.5rem;font-weight:700;">Powerful Integrations</h2>
+      <p style="text-align:center;max-width:800px;margin:0 auto 3rem;color:#94a3b8;font-size:1.1rem;">OpsAgent seamlessly connects with your existing tools and workflows</p>
+    </div>
+    <div data-lang="he">
+      <h2 style="text-align:center;margin-bottom:3rem;font-size:2.5rem;font-weight:700;">אינטגרציות חזקות</h2>
+      <p style="text-align:center;max-width:800px;margin:0 auto 3rem;color:#94a3b8;font-size:1.1rem;">OpsAgent מתחבר בצורה חלקה לכלים ולתהליכי העבודה הקיימים שלך</p>
+    </div>
+    <div class="integrations-grid" data-lang="en">
       <div class="integration-card">
         <div class="integration-icon">📅</div>
         <h3>Google Calendar</h3>
@@ -1184,43 +1440,80 @@
         <p>Extensible integration framework</p>
       </div>
     </div>
+    <div class="integrations-grid" data-lang="he">
+      <div class="integration-card">
+        <div class="integration-icon">📅</div>
+        <h3>Google Calendar</h3>
+        <p>תזמון אוטומטי וניהול פגישות</p>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">📊</div>
+        <h3>Monday.com</h3>
+        <p>סנכרון משימות ופרויקטים בצורה חלקה</p>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">📝</div>
+        <h3>Notion</h3>
+        <p>ניהול בסיס ידע מרכזי</p>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">💰</div>
+        <h3>iCount</h3>
+        <p>הנהלת חשבונות וחשבוניות אוטומטית</p>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">✉️</div>
+        <h3>Zoho Mail</h3>
+        <p>אוטומציה וניהול מיילים</p>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">🔌</div>
+        <h3>Custom APIs</h3>
+        <p>מסגרת אינטגרציה הניתנת להרחבה</p>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- SCREENSHOTS -->
 <section id="screenshots" style="background:#0F172A;padding:5rem 0;">
   <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
-    <div style="text-align:center;margin-bottom:3rem;">
+    <div style="text-align:center;margin-bottom:3rem;" data-lang="en">
       <div style="display:inline-block;background:rgba(108,58,237,0.15);color:#8B5CF6;padding:0.4rem 1rem;border-radius:20px;font-size:0.85rem;font-weight:600;letter-spacing:0.05em;margin-bottom:1rem;">LIVE PLATFORM</div>
       <h2 style="font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:1rem;">See OpsAgent in Action</h2>
       <p style="color:rgba(255,255,255,0.6);font-size:1.1rem;max-width:560px;margin:0 auto;">Real-time visibility into every agent, every run, every metric — all in one platform.</p>
+    </div>
+    <div style="text-align:center;margin-bottom:3rem;" data-lang="he">
+      <div style="display:inline-block;background:rgba(108,58,237,0.15);color:#8B5CF6;padding:0.4rem 1rem;border-radius:20px;font-size:0.85rem;font-weight:600;letter-spacing:0.05em;margin-bottom:1rem;">פלטפורמה חיה</div>
+      <h2 style="font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:1rem;">ראו את OpsAgent בפעולה</h2>
+      <p style="color:rgba(255,255,255,0.6);font-size:1.1rem;max-width:560px;margin:0 auto;">נראות בזמן אמת לכל סוכן, כל הרצה, כל מדד — הכל בפלטפורמה אחת.</p>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
       <div style="border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08);">
         <div style="background:rgba(108,58,237,0.2);padding:0.6rem 1rem;display:flex;align-items:center;gap:0.5rem;">
           <span style="width:10px;height:10px;border-radius:50%;background:#10B981;display:inline-block;"></span>
-          <span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;">Operations Overview</span>
+          <span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;" data-lang="en">Operations Overview</span><span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;" data-lang="he">סקירת תפעול</span>
         </div>
         <img src="sc_overview.jpg" alt="Operations Overview" style="width:100%;display:block;" loading="lazy">
       </div>
       <div style="border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08);">
         <div style="background:rgba(108,58,237,0.2);padding:0.6rem 1rem;display:flex;align-items:center;gap:0.5rem;">
           <span style="width:10px;height:10px;border-radius:50%;background:#6C3AED;display:inline-block;"></span>
-          <span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;">Execution History</span>
+          <span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;" data-lang="en">Execution History</span><span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;" data-lang="he">היסטוריית הרצות</span>
         </div>
         <img src="sc_history.jpg" alt="Execution History" style="width:100%;display:block;" loading="lazy">
       </div>
       <div style="border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08);">
         <div style="background:rgba(108,58,237,0.2);padding:0.6rem 1rem;display:flex;align-items:center;gap:0.5rem;">
           <span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;display:inline-block;"></span>
-          <span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;">Metrics &amp; KPIs</span>
+          <span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;" data-lang="en">Metrics &amp; KPIs</span><span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;" data-lang="he">מדדים ו-KPIs</span>
         </div>
         <img src="sc_metrics.jpg" alt="Metrics and KPIs" style="width:100%;display:block;" loading="lazy">
       </div>
       <div style="border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08);">
         <div style="background:rgba(108,58,237,0.2);padding:0.6rem 1rem;display:flex;align-items:center;gap:0.5rem;">
           <span style="width:10px;height:10px;border-radius:50%;background:#3B82F6;display:inline-block;"></span>
-          <span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;">Settings &amp; Schedules</span>
+          <span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;" data-lang="en">Settings &amp; Schedules</span><span style="color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;" data-lang="he">הגדרות ולוחות זמנים</span>
         </div>
         <img src="sc_settings.jpg" alt="Settings and Schedules" style="width:100%;display:block;" loading="lazy">
       </div>
@@ -1231,12 +1524,17 @@
 <!-- PROOF -->
 <section id="proof">
     <div class="section-inner">
-        <div class="section-header">
+        <div class="section-header" data-lang="en">
             <div class="section-label">Proven in Production</div>
             <h2>Built for Our Own Company First</h2>
             <p>OpsAgent isn't theory — it runs the entire operations of a real tech company.</p>
         </div>
-        <div class="proof-card fade-in">
+        <div class="section-header" data-lang="he">
+            <div class="section-label">מוכח בפרודקשן</div>
+            <h2>נבנה קודם כל עבור החברה שלנו</h2>
+            <p>OpsAgent זה לא תיאוריה — הוא מריץ את כל התפעול של חברת טק אמיתית.</p>
+        </div>
+        <div class="proof-card fade-in" data-lang="en">
             <div class="proof-content">
                 <h3>MSApps Case Study</h3>
                 <p>We built OpsAgent to run our own company. Every agent you see here has been running in production for months, handling real leads, real invoices, real recruiting, and real content across multiple platforms.</p>
@@ -1262,15 +1560,47 @@
                 </div>
             </div>
         </div>
+        <div class="proof-card fade-in" data-lang="he">
+            <div class="proof-content">
+                <h3>מקרה בוחן — MSApps</h3>
+                <p>בנינו את OpsAgent כדי להריץ את החברה שלנו. כל סוכן שאתם רואים כאן רץ בפרודקשן כבר חודשים, מטפל בלידים אמיתיים, חשבוניות אמיתיות, גיוס אמיתי ותוכן אמיתי על מספר פלטפורמות.</p>
+                <p>התוצאה? מערך תפעול מלא שרץ עם AI — מוכח, נבדק, ומוכן לפריסה בעסק שלך.</p>
+                <a href="mailto:michal@msapps.mobi?subject=OpsAgent - בקשת מקרה בוחן" class="btn btn-primary">לצפייה במקרה הבוחן המלא</a>
+            </div>
+            <div class="proof-metrics">
+                <div class="metric">
+                    <div class="value">6</div>
+                    <div class="desc">מחלקות אוטומטיות</div>
+                </div>
+                <div class="metric">
+                    <div class="value">24/7</div>
+                    <div class="desc">תפעול רציף</div>
+                </div>
+                <div class="metric">
+                    <div class="value">96%</div>
+                    <div class="desc">מרווח גולמי</div>
+                </div>
+                <div class="metric">
+                    <div class="value">ימים</div>
+                    <div class="desc">זמן פריסה</div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- USE CASES -->
 <section class="use-cases" id="use-cases">
   <div style="max-width:1100px;margin:0 auto;padding:5rem 2rem;">
-    <h2 style="text-align:center;margin-bottom:1rem;font-size:2.5rem;font-weight:700;">Real-World Use Cases</h2>
-    <p style="text-align:center;max-width:800px;margin:0 auto 3rem;color:#94a3b8;font-size:1.1rem;">OpsAgent transforms operations across every department</p>
-    <div class="use-cases-grid">
+    <div data-lang="en">
+      <h2 style="text-align:center;margin-bottom:1rem;font-size:2.5rem;font-weight:700;">Real-World Use Cases</h2>
+      <p style="text-align:center;max-width:800px;margin:0 auto 3rem;color:#94a3b8;font-size:1.1rem;">OpsAgent transforms operations across every department</p>
+    </div>
+    <div data-lang="he">
+      <h2 style="text-align:center;margin-bottom:1rem;font-size:2.5rem;font-weight:700;">תרחישי שימוש מהשטח</h2>
+      <p style="text-align:center;max-width:800px;margin:0 auto 3rem;color:#94a3b8;font-size:1.1rem;">OpsAgent משנה את התפעול בכל מחלקה</p>
+    </div>
+    <div class="use-cases-grid" data-lang="en">
       <div class="use-case-card">
         <h3>Sales Teams</h3>
         <p>Automated pipeline review, lead scoring, and outreach sequences that convert prospects into customers</p>
@@ -1308,18 +1638,61 @@
         </ul>
       </div>
     </div>
+    <div class="use-cases-grid" data-lang="he">
+      <div class="use-case-card">
+        <h3>צוותי מכירות</h3>
+        <p>סקירת פייפליין אוטומטית, ניקוד לידים, ורצפי פנייה שממירים לקוחות פוטנציאליים ללקוחות</p>
+        <ul style="margin-top:1rem;list-style:none;padding:0;">
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> ניתוח פייפליין יומי</li>
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> אוטומציית פנייה בלינקדאין</li>
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> יצירת תחזיות</li>
+        </ul>
+      </div>
+      <div class="use-case-card">
+        <h3>צוותי פיננסים</h3>
+        <p>התאמת קבלות, התאמת חשבוניות, ודוחות סוף חודש שחוסכים שעות עבודה ידנית</p>
+        <ul style="margin-top:1rem;list-style:none;padding:0;">
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> התאמת קבלות אוטומטית</li>
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> ניהול חשבוניות</li>
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> דוחות חודשיים</li>
+        </ul>
+      </div>
+      <div class="use-case-card">
+        <h3>HR וגיוס</h3>
+        <p>הפצת משרות, סינון מועמדים, ותיאום ראיונות שמאיצים את הגיוס</p>
+        <ul style="margin-top:1rem;list-style:none;padding:0;">
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> הפצה בלוחות דרושים</li>
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> סינון קורות חיים</li>
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> תיאום ראיונות</li>
+        </ul>
+      </div>
+      <div class="use-case-card">
+        <h3>צוותי שיווק</h3>
+        <p>יצירת פוסטים לרשתות חברתיות, תזמון תוכן, ואנליטיקס קמפיינים ששומרים על המותג שלך נראה</p>
+        <ul style="margin-top:1rem;list-style:none;padding:0;">
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> פוסטים יומיים ברשתות</li>
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> הפצה במספר פלטפורמות</li>
+          <li style="margin:0.5rem 0;"><span style="color:#06B6D4;">✓</span> ניהול לוח שנה לתוכן</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- PRICING -->
 <section class="pricing" id="pricing">
     <div class="section-inner">
-        <div class="section-header">
+        <div class="section-header" data-lang="en">
             <div class="section-label">Pricing</div>
             <h2>Pay for Outcomes, Not Seats</h2>
             <p>No per-seat fees. No tool subscriptions. Just results delivered.</p>
         </div>
-        <div class="pricing-grid">
+        <div class="section-header" data-lang="he">
+            <div class="section-label">תמחור</div>
+            <h2>משלמים על תוצאות, לא על מושבים</h2>
+            <p>בלי תשלום לפי משתמש. בלי מנויי כלים. רק תוצאות מסופקות.</p>
+        </div>
+        <div class="pricing-grid" data-lang="en">
             <div class="pricing-card fade-in">
                 <h3>Starter</h3>
                 <div class="price">$1,500<span>/mo</span></div>
@@ -1363,15 +1736,59 @@
                 <a href="https://wa.me/972544255549?text=Hi%20Michal%2C%20I%27m%20interested%20in%20OpsAgent%20%E2%80%93%20can%20we%20schedule%20a%20demo%3F" target="_blank" class="btn btn-outline" style="color: var(--gray-900); border-color: var(--gray-300); width: 100%; justify-content: center;">Contact Sales</a>
             </div>
         </div>
-        
+        <div class="pricing-grid" data-lang="he">
+            <div class="pricing-card fade-in">
+                <h3>Starter</h3>
+                <div class="price">$1,500<span>/חודש</span></div>
+                <div class="target">עד 20 עובדים</div>
+                <ul class="pricing-features">
+                    <li>2 מחלקות סוכני AI</li>
+                    <li>תהליכי עבודה אוטומטיים יומיים</li>
+                    <li>דוחות תדריך בוקר</li>
+                    <li>תמיכה במייל וצ'אט</li>
+                    <li>שיחת סקירה חודשית</li>
+                </ul>
+                <a href="mailto:michal@msapps.mobi?subject=OpsAgent - התחלה" class="btn btn-outline" style="color: var(--gray-900); border-color: var(--gray-300); width: 100%; justify-content: center;">התחל עכשיו</a>
+            </div>
+            <div class="pricing-card featured fade-in">
+                <div class="pricing-badge">הכי פופולרי</div>
+                <h3>Growth</h3>
+                <div class="price">$3,500<span>/חודש</span></div>
+                <div class="target">20–50 עובדים</div>
+                <ul class="pricing-features">
+                    <li>כל 6 מחלקות סוכני AI</li>
+                    <li>אוטומציות תהליכי עבודה מותאמות</li>
+                    <li>תמיכה בעדיפות</li>
+                    <li>מנהל הצלחה ייעודי</li>
+                    <li>שיחות אסטרטגיה שבועיות</li>
+                    <li>אינטגרציות מותאמות</li>
+                </ul>
+                <a href="mailto:michal@msapps.mobi?subject=OpsAgent - בקשת הדגמה" class="btn btn-primary" style="width: 100%; justify-content: center;">קבעו הדגמה</a>
+            </div>
+            <div class="pricing-card fade-in">
+                <h3>Enterprise</h3>
+                <div class="price">מותאם</div>
+                <div class="target">50+ עובדים</div>
+                <ul class="pricing-features">
+                    <li>הכל ב-Growth</li>
+                    <li>מחלקות ללא הגבלה</li>
+                    <li>אפשרות התקנה מקומית</li>
+                    <li>פיתוח סוכני AI מותאמים</li>
+                    <li>הבטחת SLA</li>
+                    <li>תמיכה הנדסית ייעודית</li>
+                </ul>
+                <a href="https://wa.me/972544255549?text=%D7%94%D7%99%20%D7%9E%D7%99%D7%9B%D7%9C%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%AA%D7%A2%D7%A0%D7%99%D7%99%D7%A0%D7%AA%20%D7%91-OpsAgent%20%E2%80%93%20%D7%90%D7%A4%D7%A9%D7%A8%20%D7%9C%D7%AA%D7%90%D7%9D%20%D7%94%D7%93%D7%92%D7%9E%D7%94%3F" target="_blank" class="btn btn-outline" style="color: var(--gray-900); border-color: var(--gray-300); width: 100%; justify-content: center;">צור קשר עם מכירות</a>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- FAQ -->
 <section class="faq" id="faq">
   <div style="max-width:900px;margin:0 auto;padding:5rem 2rem;">
-    <h2 style="text-align:center;margin-bottom:3rem;font-size:2.5rem;font-weight:700;">Frequently Asked Questions</h2>
-    <div class="faq-container">
+    <h2 style="text-align:center;margin-bottom:3rem;font-size:2.5rem;font-weight:700;" data-lang="en">Frequently Asked Questions</h2>
+    <h2 style="text-align:center;margin-bottom:3rem;font-size:2.5rem;font-weight:700;" data-lang="he">שאלות נפוצות</h2>
+    <div class="faq-container" data-lang="en">
       <div class="faq-item">
         <button class="faq-question">
           <span>How does OpsAgent integrate with my existing tools?</span>
@@ -1427,6 +1844,62 @@
         </div>
       </div>
     </div>
+    <div class="faq-container" data-lang="he">
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>איך OpsAgent מתחבר לכלים הקיימים שלי?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer" style="display:none;">
+          <p>OpsAgent מתחבר בצורה חלקה לפלטפורמות פופולריות כמו Google Calendar, Notion, Monday.com, iCount ו-Zoho Mail. ה-API שלנו גם תומך באינטגרציות מותאמות למערכות ארגוניות.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>מה זמן ההקמה הטיפוסי?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer" style="display:none;">
+          <p>רוב הלקוחות מתחילים לעבוד תוך 3-5 ימים. זה כולל הגדרת מערכת, אימון סוכנים מותאם, והגדרת אינטגרציות. אנחנו מספקים ליווי צמוד לאורך כל התהליך.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>כמה מאובטח OpsAgent?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer" style="display:none;">
+          <p>אבטחה היא העדיפות העליונה שלנו. אנחנו משתמשים בהצפנה ברמה ארגונית, עמידה ב-SOC 2, וביקורות אבטחה סדירות. כל המידע מאוחסן בצורה מאובטחת והגישה מבוקרת בקפדנות.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>אפשר להתאים את הסוכנים לתהליך העבודה הספציפי שלי?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer" style="display:none;">
+          <p>בהחלט. כל סוכן ניתן להתאמה מלאה לתהליכי העסק, המינוח ותהליכי העבודה הייחודיים שלך. אנחנו עובדים איתך כדי להתאים את האוטומציה לצרכים שלך.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>מה תהליך התמיכה והתחזוקה שלכם?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer" style="display:none;">
+          <p>אנחנו מספקים ניטור 24/7, סקירות אופטימיזציה חודשיות, ותמיכה ייעודית. תהיה לך גישה ישירה לצוות ההנדסה לכל בעיה או התאמה שנדרשת.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>איך אתם מטפלים בפרטיות מידע ותאימות?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer" style="display:none;">
+          <p>אנחנו עומדים בתקנות GDPR, CCPA ותקנות הגנת מידע נוספות. המידע מעובד בהתאם לדרישות המשפטיות של תחום השיפוט שלך, ואנחנו מציעים מדיניות שמירת מידע שאתה שולט בה.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1434,16 +1907,17 @@
 <!-- CONTACT FORMS -->
 <section class="contact-forms" id="contact">
   <div style="max-width:1100px;margin:0 auto;padding:5rem 2rem;">
-    <h2 style="text-align:center;margin-bottom:1rem;font-size:2.5rem;font-weight:700;"><span class="form-lang" data-lang="en">Get in Touch</span><span class="form-lang" data-lang="he" style="display:none;">צור קשר</span></h2>
-    <p style="text-align:center;margin-bottom:1rem;color:#94a3b8;"><span class="form-lang" data-lang="en">We'd love to hear from you. Choose your preferred language below.</span><span class="form-lang" data-lang="he" style="display:none;">אנחנו שמחים לשמוע ממך. בחר בשפה המועדפת שלך להלן.</span></p>
-    
-    <div style="text-align:center;margin-bottom:3rem;">
-      <button id="lang-btn-en" class="lang-btn active" data-lang="en" style="background:#06B6D4;color:#fff;border:none;padding:0.5rem 1.5rem;margin:0 0.5rem;border-radius:8px;cursor:pointer;font-weight:600;">English</button>
-      <button id="lang-btn-he" class="lang-btn" data-lang="he" style="background:#64748b;color:#fff;border:none;padding:0.5rem 1.5rem;margin:0 0.5rem;border-radius:8px;cursor:pointer;font-weight:600;">עברית</button>
+    <div data-lang="en">
+      <h2 style="text-align:center;margin-bottom:1rem;font-size:2.5rem;font-weight:700;">Get in Touch</h2>
+      <p style="text-align:center;margin-bottom:3rem;color:#94a3b8;">We'd love to hear from you.</p>
+    </div>
+    <div data-lang="he">
+      <h2 style="text-align:center;margin-bottom:1rem;font-size:2.5rem;font-weight:700;">צרו קשר</h2>
+      <p style="text-align:center;margin-bottom:3rem;color:#94a3b8;">נשמח לשמוע מכם.</p>
     </div>
 
     <!-- English Form -->
-    <form id="contact-form-en" class="contact-form active" style="max-width:600px;margin:0 auto;">
+    <form id="contact-form-en" data-lang="en" style="max-width:600px;margin:0 auto;">
       <div style="margin-bottom:1.5rem;">
         <label style="display:block;margin-bottom:0.5rem;font-weight:600;">Name <span style="color:#EF4444;">*</span></label>
         <input type="text" name="name" required style="width:100%;padding:0.75rem;border:1px solid #64748b;border-radius:8px;background:#1e293b;color:#fff;font-size:1rem;">
@@ -1464,7 +1938,7 @@
     </form>
 
     <!-- Hebrew Form -->
-    <form id="contact-form-he" class="contact-form" style="max-width:600px;margin:0 auto;display:none;direction:rtl;">
+    <form id="contact-form-he" data-lang="he" style="max-width:600px;margin:0 auto;direction:rtl;">
       <div style="margin-bottom:1.5rem;">
         <label style="display:block;margin-bottom:0.5rem;font-weight:600;">שם <span style="color:#EF4444;">*</span></label>
         <input type="text" name="name" required style="width:100%;padding:0.75rem;border:1px solid #64748b;border-radius:8px;background:#1e293b;color:#fff;font-size:1rem;text-align:right;">
@@ -1488,12 +1962,20 @@
 
 <!-- FOOTER -->
 <footer>
-    <div class="footer-inner">
+    <div class="footer-inner" data-lang="en">
         <div class="footer-text">&copy; 2026 OpsAgent. All rights reserved.</div>
         <div class="footer-links">
             <a href="mailto:michal@msapps.mobi">Contact</a>
             <a href="mailto:michal@msapps.mobi?subject=Privacy Policy Request">Privacy</a>
             <a href="mailto:michal@msapps.mobi?subject=Terms of Service Request">Terms</a>
+        </div>
+    </div>
+    <div class="footer-inner" data-lang="he">
+        <div class="footer-text">&copy; 2026 OpsAgent. כל הזכויות שמורות.</div>
+        <div class="footer-links">
+            <a href="mailto:michal@msapps.mobi">צור קשר</a>
+            <a href="mailto:michal@msapps.mobi?subject=בקשת מדיניות פרטיות">פרטיות</a>
+            <a href="mailto:michal@msapps.mobi?subject=בקשת תנאי שימוש">תנאים</a>
         </div>
     </div>
 </footer>
@@ -1524,40 +2006,28 @@
             if (target) target.scrollIntoView({ behavior: 'smooth' });
         });
     });
-    
-    // Language Switching for Forms
-    const langBtns = document.querySelectorAll('.lang-btn');
-    const contactForms = document.querySelectorAll('.contact-form');
-    const formLangs = document.querySelectorAll('.form-lang');
-    
-    langBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const selectedLang = btn.dataset.lang;
-            
-            // Update active button
-            langBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // Show/hide forms
-            contactForms.forEach(form => {
-                if (form.id === `contact-form-${selectedLang}`) {
-                    form.classList.add('active');
-                    form.style.display = 'block';
-                } else {
-                    form.classList.remove('active');
-                    form.style.display = 'none';
-                }
-            });
-            
-            // Update form language text
-            formLangs.forEach(el => {
-                if (el.dataset.lang === selectedLang) {
-                    el.style.display = 'inline';
-                } else {
-                    el.style.display = 'none';
-                }
-            });
+
+    // Global Language Switching
+    function setLanguage(lang) {
+        if (lang === 'he') {
+            document.body.classList.add('lang-he');
+            document.documentElement.setAttribute('dir', 'rtl');
+            document.documentElement.setAttribute('lang', 'he');
+        } else {
+            document.body.classList.remove('lang-he');
+            document.documentElement.setAttribute('dir', 'ltr');
+            document.documentElement.setAttribute('lang', 'en');
+        }
+        // Update all toggle buttons
+        document.querySelectorAll('[data-set-lang]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.setLang === lang);
         });
+        // Re-observe fade-in elements for the new language
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    }
+
+    document.querySelectorAll('[data-set-lang]').forEach(btn => {
+        btn.addEventListener('click', () => setLanguage(btn.dataset.setLang));
     });
 
     // FAQ Toggle Functionality
