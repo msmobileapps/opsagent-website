@@ -1,0 +1,16 @@
+[build]
+  publish = "public"
+  command = "mkdir -p public/he && cp index.html intake.html integrations.html case-study.html public/ && cp dashboard-hero.png public/ 2>/dev/null; cp he/index.html he/integrations.html public/he/"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Language = ["he"]}
+  force = false
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
