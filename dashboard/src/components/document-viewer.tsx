@@ -28,9 +28,9 @@ interface DocumentViewerProps {
 }
 
 const mockContents: Record<string, string> = {
-  '1': `# Proposal — Toyota/Aman Enterprise Mobile App
+  '1': `# Proposal — NovaTech Solutions Enterprise Mobile App
 
-**Prepared for:** Aman Levy, Toyota Israel
+**Prepared for:** Dan Cohen, NovaTech Solutions
 **Prepared by:** MSApps Ltd.
 **Date:** March 20, 2026
 **Validity:** 30 days
@@ -39,7 +39,7 @@ const mockContents: Record<string, string> = {
 
 ## Executive Summary
 
-MSApps proposes the design, development, and deployment of an enterprise mobile application for Toyota Israel's field operations team. The application will streamline fleet management, service scheduling, and real-time reporting.
+MSApps proposes the design, development, and deployment of an enterprise mobile application for NovaTech Solutions's field operations team. The application will streamline fleet management, service scheduling, and real-time reporting.
 
 ## Project Scope
 
@@ -95,7 +95,7 @@ MSApps proposes the design, development, and deployment of an enterprise mobile 
   '2': `# Invoice #2026-024
 
 **From:** MSApps Ltd.
-**To:** Strauss Group
+**To:** Atlas Industries
 **Date:** February 28, 2026
 **Due Date:** March 30, 2026
 **Status:** SENT
@@ -119,7 +119,7 @@ MSApps proposes the design, development, and deployment of an enterprise mobile 
 
 ## Payment Details
 
-Bank: Bank Leumi
+Bank: First National Bank
 Branch: 123
 Account: 456789
 Reference: INV-2026-024
@@ -144,14 +144,14 @@ Reference: INV-2026-024
 
 ## Hot Leads — Immediate Action Required
 
-### 1. Toyota/Aman ⚡
+### 1. NovaTech Solutions ⚡
 - **Value:** ₪52,000
 - **Stage:** Proposal Sent (3 days ago)
-- **Contact:** Aman Levy
+- **Contact:** Dan Cohen
 - **Action:** Follow up — no response to proposal
 - **Next Step:** Call or send follow-up email
 
-### 2. Leumi Tech ⚡
+### 2. Meridian Digital ⚡
 - **Value:** ₪85,000
 - **Stage:** Pricing Requested
 - **Contact:** David Goldstein
@@ -174,7 +174,7 @@ Reference: INV-2026-024
 
 ## Calendar Updates
 
-- ✅ Follow-up meeting with Toyota/Aman — added for Wednesday 14:00
+- ✅ Follow-up meeting with NovaTech Solutions — added for Wednesday 14:00
 - ✅ Discovery call with Gett — confirmed for Thursday 10:00
 
 ## Metrics This Week
@@ -210,14 +210,14 @@ Reference: INV-2026-024
 
 | Client | Hours | Amount | Status |
 |--------|-------|--------|--------|
-| Strauss Group | 142 | ₪28,400 | Sent |
+| Atlas Industries | 142 | ₪28,400 | Sent |
 | Wix Studios | 180 | ₪36,000 | Sent |
 | Gett | 96 | ₪19,200 | Sent |
 | CheckPoint | 88 | ₪17,600 | Paid |
 | Monday.com | 64 | ₪12,800 | Paid |
 | Fiverr | 52 | ₪10,400 | Paid |
 | Lemonade | 48 | ₪9,600 | Paid |
-| Payoneer | 40 | ₪8,000 | Paid |
+| FinBridge | 40 | ₪8,000 | Paid |
 | Taboola | 36 | ₪7,200 | Paid |
 | Other (3) | 30 | ₪6,000 | Paid |
 

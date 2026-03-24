@@ -56,32 +56,32 @@ const initialAttentionItems: AttentionItem[] = [
   {
     id: '1',
     agent: 'Lead Pipeline',
-    text: 'Toyota/Aman proposal sent 3 days ago — no response yet.',
+    text: 'NovaTech Solutions proposal sent 3 days ago — no response yet.',
     priority: 'high',
     actions: ['Send Follow-up', 'Call Contact', 'Dismiss'],
-    docId: '1', docName: 'Proposal — Toyota/Aman',
+    docId: '1', docName: 'Proposal — NovaTech Solutions',
   },
   {
     id: '2',
     agent: 'Lead Pipeline',
-    text: 'Leumi Tech requested pricing by end of week — proposal needed.',
+    text: 'Meridian Digital requested pricing by end of week — proposal needed.',
     priority: 'high',
     actions: ['Generate Proposal', 'Schedule Call', 'Dismiss'],
   },
   {
     id: '3',
     agent: 'Email Triage',
-    text: 'Client "Strauss Group" — contract renewal question, reply needed today.',
+    text: 'Client "Atlas Industries" — contract renewal question, reply needed today.',
     priority: 'urgent',
     actions: ['View Email', 'Send Draft Reply', 'Call Client'],
   },
   {
     id: '4',
     agent: 'Proposal Generator',
-    text: 'Toyota/Aman proposal ready — review pricing before sending to client.',
+    text: 'NovaTech Solutions proposal ready — review pricing before sending to client.',
     priority: 'medium',
     actions: ['Review Now', 'Approve & Send'],
-    docId: '1', docName: 'Proposal — Toyota/Aman',
+    docId: '1', docName: 'Proposal — NovaTech Solutions',
   },
   {
     id: '5',
@@ -93,17 +93,17 @@ const initialAttentionItems: AttentionItem[] = [
   {
     id: '6',
     agent: 'LinkedIn Outreach',
-    text: 'Avi Koren (CTO, Payoneer) responded — interested in a demo.',
+    text: 'Nir Shalem (CTO, FinBridge) responded — interested in a demo.',
     priority: 'high',
     actions: ['View Reply', 'Schedule Demo'],
   },
 ];
 
 const recentDocuments = [
-  { id: '1', name: 'Proposal — Toyota/Aman', type: 'PDF', agent: 'Proposal Generator', date: 'Mar 20', size: '₪52K scope' },
+  { id: '1', name: 'Proposal — NovaTech Solutions', type: 'PDF', agent: 'Proposal Generator', date: 'Mar 20', size: '₪52K scope' },
   { id: '2', name: 'Daily Pipeline Brief', type: 'PDF', agent: 'Lead Pipeline', date: 'Mar 21', size: '47 leads' },
   { id: '3', name: 'Monthly Billing Summary — Feb', type: 'XLSX', agent: 'Client Invoicing', date: 'Feb 28', size: '₪148K' },
-  { id: '4', name: 'Invoice #2026-024 — Strauss Group', type: 'PDF', agent: 'Client Invoicing', date: 'Feb 28', size: '₪28,400' },
+  { id: '4', name: 'Invoice #2026-024 — Atlas Industries', type: 'PDF', agent: 'Client Invoicing', date: 'Feb 28', size: '₪28,400' },
   { id: '5', name: 'Missing Receipts List', type: 'DOC', agent: 'Receipt Matching', date: 'Mar 16', size: '4 items' },
   { id: '6', name: 'Recruiting Report — Senior Dev', type: 'PDF', agent: 'Recruiting Pipeline', date: 'Mar 17', size: '23 apps' },
 ];
@@ -148,10 +148,10 @@ const actionIcons: Record<string, React.ComponentType<{ className?: string }>> =
 const actionFeedback: Record<string, { message: string; type: 'success' | 'info' }> = {
   'Send Follow-up': { message: 'Follow-up email drafted and sent to contact. Calendar reminder set for 48h check-in.', type: 'success' },
   'Call Contact': { message: 'Initiating call... Opening dialer for contact. Call notes template loaded.', type: 'info' },
-  'Call Client': { message: 'Initiating call... Opening dialer for Strauss Group. Previous call notes loaded.', type: 'info' },
+  'Call Client': { message: 'Initiating call... Opening dialer for Atlas Industries. Previous call notes loaded.', type: 'info' },
   'Generate Proposal': { message: 'Proposal Generator agent started. Template selected, pricing calculated. Draft will be ready in ~3 minutes.', type: 'success' },
   'Schedule Call': { message: 'Finding available slots... Call scheduled for tomorrow at 14:00. Calendar invite sent to contact.', type: 'success' },
-  'Schedule Demo': { message: 'Demo scheduled for Thursday at 11:00. Calendar invite sent to Avi Koren. Demo environment prepared.', type: 'success' },
+  'Schedule Demo': { message: 'Demo scheduled for Thursday at 11:00. Calendar invite sent to Nir Shalem. Demo environment prepared.', type: 'success' },
   'Send Draft Reply': { message: 'AI-drafted reply sent for your review. Check your email drafts folder. Reply addresses contract renewal terms.', type: 'success' },
   'Approve & Send': { message: 'Proposal approved and sent to client via email. Delivery confirmation received. Follow-up scheduled in 3 days.', type: 'success' },
   'Upload Receipts': { message: 'Upload dialog opened. Drag & drop receipts or select files from your device.', type: 'info' },

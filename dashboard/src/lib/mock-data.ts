@@ -198,7 +198,7 @@ export const executionLogs: ExecutionLog[] = [
         items: [
           { icon: 'check', text: '15 new connections requested' },
           { icon: 'user', text: '3 responses received from previous batch' },
-          { icon: 'calendar', text: '1 meeting request from Avi Koren (CTO, Payoneer)', actions: [
+          { icon: 'calendar', text: '1 meeting request from Nir Shalem (CTO, FinBridge)', actions: [
             { label: 'Schedule Meeting', style: 'primary', icon: 'calendar' },
             { label: 'View Profile', style: 'secondary', icon: 'eye' },
           ] },
@@ -208,7 +208,7 @@ export const executionLogs: ExecutionLog[] = [
         type: 'attention',
         title: 'Needs your attention',
         items: [
-          { icon: 'alert', text: 'Avi Koren responded — interested in a demo. Reply recommended today.', highlight: true, actions: [
+          { icon: 'alert', text: 'Nir Shalem responded — interested in a demo. Reply recommended today.', highlight: true, actions: [
             { label: 'View Reply', style: 'primary', icon: 'eye' },
             { label: 'Schedule Demo', style: 'success', icon: 'calendar' },
             { label: 'Dismiss', style: 'secondary', icon: 'x' },
@@ -271,11 +271,11 @@ export const executionLogs: ExecutionLog[] = [
         type: 'results',
         title: 'Hot leads identified',
         items: [
-          { icon: 'money', text: 'Toyota/Aman — ₪52K proposal ready, awaiting response', tag: '₪52K', tagColor: 'green', actions: [
+          { icon: 'money', text: 'NovaTech Solutions — ₪52K proposal ready, awaiting response', tag: '₪52K', tagColor: 'green', actions: [
             { label: 'View Proposal', style: 'primary', icon: 'eye' },
             { label: 'Send Follow-up', style: 'success', icon: 'send' },
           ] },
-          { icon: 'money', text: 'Leumi Tech — ₪85K opportunity, requested pricing', tag: '₪85K', tagColor: 'green', actions: [
+          { icon: 'money', text: 'Meridian Digital — ₪85K opportunity, requested pricing', tag: '₪85K', tagColor: 'green', actions: [
             { label: 'Generate Proposal', style: 'primary', icon: 'edit' },
             { label: 'Schedule Call', style: 'secondary', icon: 'phone' },
           ] },
@@ -303,12 +303,12 @@ export const executionLogs: ExecutionLog[] = [
         type: 'attention',
         title: 'Needs your attention',
         items: [
-          { icon: 'alert', text: 'Toyota/Aman proposal sent 3 days ago — no response yet.', highlight: true, actions: [
+          { icon: 'alert', text: 'NovaTech Solutions proposal sent 3 days ago — no response yet.', highlight: true, actions: [
             { label: 'Send Follow-up', style: 'primary', icon: 'send' },
             { label: 'Call Contact', style: 'success', icon: 'phone' },
             { label: 'Dismiss', style: 'secondary', icon: 'x' },
           ] },
-          { icon: 'alert', text: 'Leumi Tech requested pricing by end of week — proposal needed.', highlight: true, actions: [
+          { icon: 'alert', text: 'Meridian Digital requested pricing by end of week — proposal needed.', highlight: true, actions: [
             { label: 'Generate Proposal', style: 'primary', icon: 'edit' },
             { label: 'Schedule Call', style: 'success', icon: 'phone' },
             { label: 'Dismiss', style: 'secondary', icon: 'x' },
@@ -414,7 +414,7 @@ export const executionLogs: ExecutionLog[] = [
         type: 'attention',
         title: 'Urgent — needs your attention',
         items: [
-          { icon: 'alert', text: 'Client "Strauss Group" — contract renewal question, reply needed today', highlight: true, actions: [
+          { icon: 'alert', text: 'Client "Atlas Industries" — contract renewal question, reply needed today', highlight: true, actions: [
             { label: 'View Email', style: 'primary', icon: 'eye' },
             { label: 'Send Draft Reply', style: 'success', icon: 'send' },
             { label: 'Call Client', style: 'secondary', icon: 'phone' },
@@ -434,7 +434,7 @@ export const executionLogs: ExecutionLog[] = [
         type: 'documents',
         title: 'Draft replies ready for review',
         items: [
-          { icon: 'email', text: 'Reply to Strauss Group — contract renewal confirmation', tag: 'Draft', tagColor: 'yellow', actions: [
+          { icon: 'email', text: 'Reply to Atlas Industries — contract renewal confirmation', tag: 'Draft', tagColor: 'yellow', actions: [
             { label: 'Review & Send', style: 'primary', icon: 'eye' },
             { label: 'Edit', style: 'secondary', icon: 'edit' },
           ] },
@@ -638,7 +638,7 @@ export const executionLogs: ExecutionLog[] = [
         type: 'documents',
         title: 'Invoices generated',
         items: [
-          { icon: 'file', text: 'Invoice #2026-024 — Strauss Group', subtitle: '142 hours · ₪28,400', tag: 'PDF', tagColor: 'blue', actions: [
+          { icon: 'file', text: 'Invoice #2026-024 — Atlas Industries', subtitle: '142 hours · ₪28,400', tag: 'PDF', tagColor: 'blue', actions: [
             { label: 'View', style: 'primary', icon: 'eye' },
             { label: 'Edit', style: 'secondary', icon: 'edit' },
             { label: 'Resend', style: 'secondary', icon: 'send' },
@@ -684,7 +684,7 @@ export const executionLogs: ExecutionLog[] = [
     startedAt: '2026-03-20T14:30:00Z',
     completedAt: '2026-03-20T14:42:18Z',
     status: 'success',
-    summary: 'Generated proposal for Toyota/Aman — ₪52K project scope',
+    summary: 'Generated proposal for NovaTech Solutions — ₪52K project scope',
     details: [
       'Loaded client profile and project requirements',
       'Selected template: Enterprise Mobile App',
@@ -699,7 +699,7 @@ export const executionLogs: ExecutionLog[] = [
         type: 'summary',
         title: 'Proposal generated',
         items: [
-          { icon: 'check', text: 'Client: Toyota/Aman (via contact: Aman Levy)' },
+          { icon: 'check', text: 'Client: NovaTech Solutions (via contact: Dan Cohen)' },
           { icon: 'money', text: 'Project scope: ₪52,000 — Enterprise Mobile App', tag: '₪52K', tagColor: 'green' },
           { icon: 'check', text: 'Template: Enterprise Mobile App · 8 pages · Timeline included' },
         ],
@@ -708,7 +708,7 @@ export const executionLogs: ExecutionLog[] = [
         type: 'documents',
         title: 'Generated documents',
         items: [
-          { icon: 'file', text: 'Proposal — Toyota Aman Enterprise Mobile App', subtitle: '8 pages · Generated from Enterprise template', tag: 'PDF', tagColor: 'blue', actions: [
+          { icon: 'file', text: 'Proposal — NovaTech Solutions Enterprise Mobile App', subtitle: '8 pages · Generated from Enterprise template', tag: 'PDF', tagColor: 'blue', actions: [
             { label: 'View', style: 'primary', icon: 'eye' },
             { label: 'Edit', style: 'secondary', icon: 'edit' },
             { label: 'Download', style: 'secondary', icon: 'download' },

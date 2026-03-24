@@ -19,12 +19,12 @@ type DocType = 'all' | 'proposal' | 'invoice' | 'report' | 'post' | 'receipt';
 
 const documents = [
   {
-    id: '1', name: 'Proposal — Toyota/Aman Enterprise Mobile App', type: 'proposal',
+    id: '1', name: 'Proposal — NovaTech Solutions Enterprise Mobile App', type: 'proposal',
     format: 'PDF', agent: 'Proposal Generator', date: '2026-03-20', size: '2.4 MB',
     status: 'draft', department: 'Sales', tag: '₪52K',
   },
   {
-    id: '2', name: 'Invoice #2026-024 — Strauss Group', type: 'invoice',
+    id: '2', name: 'Invoice #2026-024 — Atlas Industries', type: 'invoice',
     format: 'PDF', agent: 'Client Invoicing', date: '2026-02-28', size: '340 KB',
     status: 'sent', department: 'Finance', tag: '₪28,400',
   },
@@ -79,12 +79,12 @@ const documents = [
     status: 'final', department: 'HR', tag: '23 apps',
   },
   {
-    id: '13', name: 'Pricing Breakdown — Toyota/Aman', type: 'proposal',
+    id: '13', name: 'Pricing Breakdown — NovaTech Solutions', type: 'proposal',
     format: 'XLSX', agent: 'Proposal Generator', date: '2026-03-20', size: '180 KB',
     status: 'draft', department: 'Sales', tag: '₪52K',
   },
   {
-    id: '14', name: 'Project Timeline — Toyota/Aman', type: 'proposal',
+    id: '14', name: 'Project Timeline — NovaTech Solutions', type: 'proposal',
     format: 'PDF', agent: 'Proposal Generator', date: '2026-03-20', size: '95 KB',
     status: 'draft', department: 'Sales', tag: '16 weeks',
   },
