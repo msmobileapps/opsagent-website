@@ -1,9 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import { agents } from '@/lib/mock-data';
+import { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
-import { Bell, Clock, Mail, Shield, CreditCard, Receipt, TrendingUp, Zap } from 'lucide-react';
+import {
+  Bell,
+  Clock,
+  Mail,
+  Shield,
+  CreditCard,
+  Receipt,
+  TrendingUp,
+  Zap,
+  Plus,
+  Trash2,
+  Circle,
+  Server,
+  ExternalLink,
+  RefreshCw,
+} from 'lucide-react';
+import { useApi } from '@/lib/use-api';
+import { useClient, ClientSummary } from '@/lib/client-context';
 
 function Toggle({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) {
   return (
@@ -25,28 +41,186 @@ function Toggle({ enabled, onToggle }: { enabled: boolean; onToggle: () => void 
   );
 }
 
-const billingItems = [
-  { label: 'Agent runs this month', value: '847', limit: '/ Unlimited', icon: Zap },
-  { label: 'Documents generated', value: '156', limit: '/ Unlimited', icon: Receipt },
-  { label: 'Active agents', value: '17', limit: '/ 25 max', icon: TrendingUp },
-];
+// ── Client Management Panel ──────────────────────────────────────────────────
 
-const invoiceHistory = [
-  { date: 'Mar 1, 2026', amount: '$4,500', status: 'Paid', plan: 'Growth' },
-  { date: 'Feb 1, 2026', amount: '$4,500', status: 'Paid', plan: 'Growth' },
-  { date: 'Jan 1, 2026', amount: '$2,500', status: 'Paid', plan: 'Pro' },
-];
+function ClientManagement() {
+  const { clients, selectedClient, setSelectedClientId, refreshClients } = useClient();
+  const [healthResults, setHealthResults] = useState<Record<string, { connected: boolean; latencyMs: number | null; checking: boolean }>>({});
+
+  const checkHealth = async (clientId: string) => {
+    setHealthResults(prev => ({ ...prev, [clientId]: { connected: false, latencyMs: null, checking: true } }));
+    try {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const res = await fetch(`${API_BASE}/api/clients/${clientId}/health`);
+      const data = await res.json();
+      setHealthResults(prev => ({
+        ...prev,
+        [clientId]: { connected: data.connected, latencyMs: data.latencyMs, checking: false },
+      }));
+    } catch {
+      setHealthResults(prev => ({
+        ...prev,
+        [clientId]: { connected: false, latencyMs: null, checking: false },
+      }));
+    }
+  };
+
+  const checkAllHealth = async () => {
+    for (const client of clients) {
+      checkHealth(client.id);
+    }
+  };
+
+  return (
+    <div className="bg-surface-raised border border-surface-border rounded-xl p-5">
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <Server className="w-4 h-4 text-brand-400" />
+          <h2 className="text-base font-semibold text-white">Client Management</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={checkAllHealth}
+            className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-surface-raised"
+          >
+            <RefreshCw className="w-3 h-3" />
+            Check All VMs
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {clients.map(client => {
+          const health = healthResults[client.id];
+          const isSelected = client.id === selectedClient?.id;
+
+          return (
+            <div
+              key={client.id}
+              className={clsx(
+                'p-4 rounded-xl border transition-all cursor-pointer',
+                isSelected
+                  ? 'border-brand-500/30 bg-brand-500/5'
+                  : 'border-surface-border bg-surface/50 hover:border-surface-border/80'
+              )}
+              onClick={() => setSelectedClientId(client.id)}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Circle
+                    className={clsx(
+                      'w-2.5 h-2.5 fill-current',
+                      health?.checking ? 'text-yellow-400 animate-pulse' :
+                      health?.connected ? 'text-emerald-400' :
+                      client.connected ? 'text-emerald-400' : 'text-gray-500'
+                    )}
+                  />
+                  <span className={clsx(
+                    'text-sm font-semibold',
+                    isSelected ? 'text-brand-400' : 'text-white'
+                  )}>
+                    {client.name}
+                  </span>
+                  {isSelected && (
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-400">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {health?.latencyMs != null && (
+                    <span className="text-[10px] text-gray-500">
+                      {health.latencyMs}ms
+                    </span>
+                  )}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); checkHealth(client.id); }}
+                    className="text-gray-500 hover:text-white transition-colors p-1 rounded"
+                    title="Check VM health"
+                  >
+                    <RefreshCw className={clsx('w-3 h-3', health?.checking && 'animate-spin')} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 text-xs text-gray-500">
+                <div>
+                  <span className="text-gray-600">Industry:</span>
+                  <p className="text-gray-400 truncate">{client.industry || '—'}</p>
+                </div>
+                <div>
+                  <span className="text-gray-600">Agents:</span>
+                  <p className="text-gray-400">{client.enabledAgents}/{client.totalAgents}</p>
+                </div>
+                <div>
+                  <span className="text-gray-600">VM:</span>
+                  <p className="text-gray-400 truncate">{client.vmId || '—'}</p>
+                </div>
+              </div>
+
+              {client.tunnelUrl && (
+                <div className="mt-2 flex items-center gap-1 text-[10px] text-gray-600">
+                  <ExternalLink className="w-2.5 h-2.5" />
+                  <span className="truncate">{client.tunnelUrl}</span>
+                </div>
+              )}
+
+              {client.dashboard && (
+                <div className="mt-2">
+                  <a
+                    href={client.dashboard.route}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[10px] font-medium text-brand-400 hover:text-brand-300 transition-colors"
+                  >
+                    Open Client Dashboard →
+                  </a>
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {clients.length === 0 && (
+          <div className="text-center py-6 text-gray-500">
+            <Server className="w-6 h-6 mx-auto mb-2 opacity-40" />
+            <p className="text-sm">No clients configured</p>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-4 pt-4 border-t border-surface-border">
+        <p className="text-xs text-gray-600">
+          Add new clients with: <code className="text-gray-400 bg-surface px-1 py-0.5 rounded">node scripts/provision-client.js --id &lt;id&gt; --name &quot;Name&quot;</code>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Settings Page ───────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const [schedules, setSchedules] = useState(
-    agents.map(a => ({ id: a.id, name: a.name, schedule: a.schedule, enabled: true }))
-  );
+  const { agents } = useApi();
+  const { selectedClient } = useClient();
+
+  const [schedules, setSchedules] = useState<{ id: string; name: string; schedule: string; enabled: boolean }[]>([]);
   const [notifications, setNotifications] = useState({
     email: true,
     onFailure: true,
     dailyDigest: true,
     weeklyReport: false,
   });
+
+  useEffect(() => {
+    if (agents.length > 0) {
+      setSchedules(agents.map(a => ({
+        id: a.id,
+        name: a.name,
+        schedule: a.schedule,
+        enabled: a.status !== 'idle',
+      })));
+    }
+  }, [agents]);
 
   const toggleAgent = (id: string) => {
     setSchedules(s => s.map(a => a.id === id ? { ...a, enabled: !a.enabled } : a));
@@ -56,7 +230,15 @@ export default function SettingsPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">Configure agents, notifications, and billing</p>
+        <p className="text-sm text-gray-500 mt-1">
+          Manage clients, agent schedules, and notifications
+          {selectedClient && <span> — <span className="text-gray-400">{selectedClient.name}</span></span>}
+        </p>
+      </div>
+
+      {/* Client Management — full width */}
+      <div className="mb-6">
+        <ClientManagement />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -67,7 +249,7 @@ export default function SettingsPage() {
             <h2 className="text-base font-semibold text-white">Agent Schedules</h2>
           </div>
           <div className="space-y-3">
-            {schedules.map(agent => (
+            {schedules.length > 0 ? schedules.map(agent => (
               <div
                 key={agent.id}
                 className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-surface/50"
@@ -78,7 +260,9 @@ export default function SettingsPage() {
                 </div>
                 <Toggle enabled={agent.enabled} onToggle={() => toggleAgent(agent.id)} />
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-gray-500 text-center py-4">Select a client to see agents</p>
+            )}
           </div>
         </div>
 
@@ -128,7 +312,8 @@ export default function SettingsPage() {
                 <label className="text-xs text-gray-500 uppercase tracking-wider">Email</label>
                 <input
                   type="email"
-                  defaultValue="jake@acmehomeimprovement.com"
+                  defaultValue={selectedClient?.id ? '' : ''}
+                  placeholder="ops@client.com"
                   className="mt-1 w-full bg-surface border border-surface-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
@@ -136,88 +321,11 @@ export default function SettingsPage() {
                 <label className="text-xs text-gray-500 uppercase tracking-wider">Timezone</label>
                 <input
                   type="text"
-                  defaultValue="America/Chicago"
+                  defaultValue={selectedClient?.timezone || 'Asia/Jerusalem'}
                   className="mt-1 w-full bg-surface border border-surface-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"
                 />
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Billing section — full width */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Plan & Usage */}
-        <div className="bg-surface-raised border border-surface-border rounded-xl p-5">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-brand-400" />
-              <h2 className="text-base font-semibold text-white">Plan & Usage</h2>
-            </div>
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-brand-500/15 text-brand-400 border border-brand-500/20">
-              Growth Plan
-            </span>
-          </div>
-
-          <div className="flex items-baseline gap-1 mb-4">
-            <span className="text-3xl font-bold text-white">$4,500</span>
-            <span className="text-sm text-gray-500">/ month</span>
-          </div>
-
-          <div className="space-y-3">
-            {billingItems.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div key={i} className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-surface/50">
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-300">{item.label}</span>
-                  </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-sm font-semibold text-white">{item.value}</span>
-                    <span className="text-xs text-gray-500">{item.limit}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-surface-border flex items-center justify-between">
-            <p className="text-xs text-gray-500">Next billing: April 1, 2026</p>
-            <button className="text-xs font-medium text-brand-400 hover:text-brand-300 transition-colors">
-              Upgrade Plan
-            </button>
-          </div>
-        </div>
-
-        {/* Invoice History */}
-        <div className="bg-surface-raised border border-surface-border rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-5">
-            <Receipt className="w-4 h-4 text-brand-400" />
-            <h2 className="text-base font-semibold text-white">Invoice History</h2>
-          </div>
-
-          <div className="space-y-2">
-            {invoiceHistory.map((inv, i) => (
-              <div key={i} className="flex items-center justify-between py-3 px-3 rounded-lg bg-surface/50">
-                <div>
-                  <p className="text-sm text-white font-medium">{inv.date}</p>
-                  <p className="text-xs text-gray-500">{inv.plan} Plan</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-white">{inv.amount}</span>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-accent-500/20 text-accent-400">
-                    {inv.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-surface-border">
-            <button className="text-xs font-medium text-brand-400 hover:text-brand-300 transition-colors">
-              View All Invoices
-            </button>
           </div>
         </div>
       </div>
