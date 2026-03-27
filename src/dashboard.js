@@ -6,6 +6,16 @@ import { fileURLToPath } from 'url';
 import { runAgent } from './runner.js';
 import { saveLog, listLogs, readLog } from './logger.js';
 import { parseAgentOutput, buildExecutionLog } from './output-parser.js';
+import {
+  loadAllClients,
+  getClient,
+  getClientsSummary,
+  checkClientHealth,
+  checkAllClientsHealth,
+  saveClient,
+  deleteClient,
+} from './client-registry.js';
+import { proxyToClient, proxySSEToClient } from './tunnel-proxy.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENTS_DIR = path.join(__dirname, '..', 'clients');
@@ -30,11 +40,9 @@ const runningAgents = new Map();
 
 // ── API ──────────────────────────────────────────────────────────────────────
 
+// Use the client registry for loading clients (backward compat wrapper)
 function loadClients() {
-  if (!fs.existsSync(CLIENTS_DIR)) return [];
-  return fs.readdirSync(CLIENTS_DIR)
-    .filter(f => f.endsWith('.json') && f !== 'template.json')
-    .map(f => JSON.parse(fs.readFileSync(path.join(CLIENTS_DIR, f), 'utf-8')));
+  return loadAllClients();
 }
 
 function getLastRun(clientId, agentName) {
@@ -298,6 +306,78 @@ app.get('/api/running', (req, res) => {
     running.push({ clientId, agentName });
   }
   res.json({ running });
+});
+
+// ── Client Management API ────────────────────────────────────────────────────
+
+// List all clients with connection status
+app.get('/api/clients', (req, res) => {
+  const summary = getClientsSummary();
+  res.json({ clients: summary });
+});
+
+// Get a single client's full config
+app.get('/api/clients/:clientId', (req, res) => {
+  const client = getClient(req.params.clientId);
+  if (!client) return res.status(404).json({ error: 'Client not found' });
+  res.json(client);
+});
+
+// Create or update a client
+app.put('/api/clients/:clientId', (req, res) => {
+  const clientConfig = { ...req.body, id: req.params.clientId };
+  const filePath = saveClient(clientConfig);
+  res.json({ saved: true, path: filePath });
+});
+
+// Delete a client
+app.delete('/api/clients/:clientId', (req, res) => {
+  const deleted = deleteClient(req.params.clientId);
+  res.json({ deleted });
+});
+
+// Health check for a single client's VM
+app.get('/api/clients/:clientId/health', async (req, res) => {
+  const result = await checkClientHealth(req.params.clientId);
+  res.json(result);
+});
+
+// Health check for all clients' VMs
+app.get('/api/health', async (req, res) => {
+  const results = await checkAllClientsHealth();
+  res.json({ clients: results });
+});
+
+// ── Tunnel Proxy ─────────────────────────────────────────────────────────────
+
+// Proxy any API call to a client's VM
+// GET /api/proxy/:clientId/status → VM's /api/status
+app.get('/api/proxy/:clientId/*', async (req, res) => {
+  const { clientId } = req.params;
+  const apiPath = req.params[0]; // everything after /api/proxy/:clientId/
+
+  // Special case: SSE streams for agent runs
+  if (apiPath.startsWith('run/')) {
+    return proxySSEToClient(clientId, apiPath, res);
+  }
+
+  const result = await proxyToClient(clientId, apiPath);
+  res.status(result.status).json(result.data || { error: result.error });
+});
+
+// Proxy POST/PUT to client VM
+app.post('/api/proxy/:clientId/*', async (req, res) => {
+  const { clientId } = req.params;
+  const apiPath = req.params[0];
+  const result = await proxyToClient(clientId, apiPath, { method: 'POST', body: req.body });
+  res.status(result.status).json(result.data || { error: result.error });
+});
+
+app.put('/api/proxy/:clientId/*', async (req, res) => {
+  const { clientId } = req.params;
+  const apiPath = req.params[0];
+  const result = await proxyToClient(clientId, apiPath, { method: 'PUT', body: req.body });
+  res.status(result.status).json(result.data || { error: result.error });
 });
 
 // ── HTML UI ──────────────────────────────────────────────────────────────────
