@@ -1050,7 +1050,7 @@
         <div class="nav-links">
             <a href="#services">Services</a>            <a href='/intake'>Integrations</a>
             <a href="#how-it-works">How It Works</a>
-            <a href="#sosa">SOSA</a>
+            <a href="#sosa">SOSA&trade;</a>
             <a href="#security">Security</a>
             <a href="#pricing">Pricing</a>
             <a href="/intake" class="btn btn-primary">Get Started</a>
@@ -1446,7 +1446,121 @@
     </div>
 </section>
 
-<!-- SCREENSHOTS -->
+<!-- SOSA METHODOLOGY -->
+<section class="sosa-section" id="sosa">
+    <div class="sosa-inner">
+        <div class="sosa-header">
+            <div class="sosa-badge">Research Framework</div>
+            <h2>The <span class="sosa-acronym">SOSA&trade;</span> Methodology</h2>
+            <p class="sosa-subtitle">Supervised Orchestrated Secured Agents &mdash; a formal framework for deploying autonomous AI agents in enterprise operations.</p>
+        </div>
+        <div class="sosa-abstract">
+            <h3>Abstract</h3>
+            <p>The rapid proliferation of large language model (LLM)-based agents in enterprise workflows has exposed a critical gap: the absence of a unifying framework that governs how autonomous agents should be supervised, coordinated, and constrained in production environments. Existing approaches treat autonomy and control as opposing forces, resulting in systems that are either too brittle to scale or too opaque to trust. We propose <strong>SOSA&trade; &mdash; Supervised Orchestrated Secured Agents</strong> &mdash; a four-pillar methodology that reconciles agent autonomy with organizational accountability. SOSA provides a formal structure for deploying multi-agent systems that operate continuously, adapt to heterogeneous toolchains, and maintain verifiable compliance with security and governance policies. We further present OpsAgent as a reference implementation of the SOSA framework deployed in production across multiple business verticals.</p>
+        </div>
+        <div class="sosa-pillars">
+            <div class="sosa-pillar fade-in">
+                <div class="pillar-letter s1">S</div>
+                <h4>Supervised</h4>
+                <p>Every agent operates under a defined supervision policy. Human-in-the-loop checkpoints are not optional add-ons &mdash; they are first-class architectural primitives. Supervision is graduated: routine tasks execute autonomously, while high-stakes actions require explicit human approval or are bounded by pre-authorized decision envelopes.</p>
+                <div class="pillar-formal">Formally: for any agent action <em>a</em> with impact score <em>I(a) &gt; &theta;</em>, execution is gated on supervisor approval <em>S(a) = 1</em>, where <em>&theta;</em> is a configurable organizational risk threshold.</div>
+            </div>
+            <div class="sosa-pillar fade-in">
+                <div class="pillar-letter o">O</div>
+                <h4>Orchestrated</h4>
+                <p>Isolated agents produce isolated outcomes. SOSA mandates an orchestration layer that coordinates agent execution across temporal, informational, and toolchain dimensions. Agents share structured context, respect dependency graphs, and are scheduled according to business-logic DAGs rather than ad-hoc cron triggers.</p>
+                <div class="pillar-formal">The orchestrator maintains a directed acyclic graph <em>G = (V, E)</em> where vertices represent agent tasks and edges encode data dependencies and temporal constraints, ensuring conflict-free concurrent execution.</div>
+            </div>
+            <div class="sosa-pillar fade-in">
+                <div class="pillar-letter s2">S</div>
+                <h4>Secured</h4>
+                <p>Security in SOSA is not a perimeter &mdash; it is a property of every layer. Each agent runs in an isolated execution environment with scoped credentials, zero-trust network boundaries, and cryptographically verifiable audit trails. No agent can access resources beyond its declared permission set, and all inter-agent communication passes through authenticated channels.</p>
+                <div class="pillar-formal">Each agent <em>A<sub>i</sub></em> is assigned a capability set <em>C<sub>i</sub> &sube; C</em> enforced at runtime. Cross-agent communication requires mutual attestation: <em>msg(A<sub>i</sub>, A<sub>j</sub>)</em> is valid iff <em>auth(A<sub>i</sub>) &and; auth(A<sub>j</sub>) = true</em>.</div>
+            </div>
+            <div class="sosa-pillar fade-in">
+                <div class="pillar-letter a">A</div>
+                <h4>Agents</h4>
+                <p>SOSA agents are not scripts with LLM wrappers. They are goal-directed autonomous entities with persistent context, tool-use capabilities, and adaptive planning. Each agent possesses a defined role ontology, success metrics, and failure recovery strategies &mdash; enabling them to operate as reliable participants in a larger organizational system.</p>
+                <div class="pillar-formal">An agent is a tuple <em>A = (R, T, M, P)</em> where <em>R</em> is the role specification, <em>T</em> is the tool manifest, <em>M</em> is the memory/context store, and <em>P</em> is the planning policy governing action selection.</div>
+            </div>
+        </div>
+        <div class="sosa-body">
+            <h3>Why Existing Approaches Fail</h3>
+            <p>The current landscape of AI agent deployment can be characterized by two failure modes. The first is <em>under-autonomy</em>: agents configured as glorified chatbots, requiring human input at every step, producing marginal efficiency gains and high interaction costs. The second is <em>over-autonomy</em>: &ldquo;set and forget&rdquo; agents with insufficient guardrails that produce cascading errors, hallucinate business-critical actions, or silently drift from their intended objectives.</p>
+            <p>Both failure modes stem from the same root cause: the absence of a structured methodology for calibrating the supervision-autonomy spectrum. SOSA addresses this by introducing formal governance primitives at the framework level, ensuring that the degree of autonomy granted to any agent is proportional to its demonstrated reliability, the reversibility of its actions, and the risk tolerance of the domain.</p>
+            <h3>The SOSA Execution Model</h3>
+            <p>In a SOSA-compliant system, agent execution follows a three-phase loop: <strong>Plan</strong>, <strong>Act</strong>, and <strong>Verify</strong>. During the planning phase, the agent decomposes its objective into a sequence of tool calls and information retrievals, subject to the constraints in its capability set. During the action phase, each step is executed against real external systems &mdash; APIs, databases, communication platforms &mdash; with every interaction logged to an immutable audit store. During the verification phase, the orchestrator evaluates the outcome against declared success criteria and updates the agent's context for subsequent runs.</p>
+            <p>This loop is not merely procedural. The verification phase feeds into a continuous improvement mechanism: agents that consistently meet their success criteria earn expanded autonomy boundaries, while agents that exhibit failure patterns are automatically escalated to tighter supervision. SOSA thus implements a formal trust gradient that evolves with observed agent performance.</p>
+            <h3>Implications for Enterprise Adoption</h3>
+            <p>The SOSA methodology directly addresses the three primary barriers to enterprise AI agent adoption: accountability, reliability, and compliance. By requiring full audit trails and graduated supervision, SOSA satisfies regulatory and internal governance requirements without sacrificing operational velocity. By mandating orchestration and structured inter-agent context sharing, SOSA eliminates the coordination failures that plague multi-agent deployments. And by treating security as a first-class design constraint rather than an afterthought, SOSA enables deployment in environments where data sensitivity precludes the use of conventional SaaS-based AI solutions.</p>
+            <p>Organizations adopting SOSA can expect to deploy AI agents that are not merely impressive in demos, but durable in production &mdash; systems that earn trust through verifiable behavior rather than demanding it through marketing claims.</p>
+        </div>
+        <div class="sosa-impl">
+            <h3>OpsAgent: SOSA&trade; in Production</h3>
+            <p class="impl-subtitle">OpsAgent is the first commercial implementation of the SOSA framework. Every architectural decision &mdash; from isolated virtual machine environments to the orchestration scheduler to the human-approval gates &mdash; maps directly to a SOSA pillar.</p>
+            <div class="impl-grid">
+                <div class="impl-item">
+                    <h5>Supervised</h5>
+                    <p>Configurable approval workflows per agent. Daily briefings surface all actions taken. High-impact operations (financial transactions, external communications) require explicit human sign-off.</p>
+                </div>
+                <div class="impl-item">
+                    <h5>Orchestrated</h5>
+                    <p>A centralized scheduler coordinates 18+ agent types across temporal and data dependencies. Agents share context through structured registries, not ad-hoc message passing.</p>
+                </div>
+                <div class="impl-item">
+                    <h5>Secured</h5>
+                    <p>Each client runs on an isolated virtual machine with scoped OAuth credentials. Zero business data is stored on OpsAgent servers. Every action is logged to an immutable audit trail.</p>
+                </div>
+                <div class="impl-item">
+                    <h5>Agents</h5>
+                    <p>Goal-directed agents with persistent memory, real tool access (calendars, CRMs, accounting systems), and adaptive planning &mdash; not scripts, not wrappers, not demos.</p>
+                </div>
+            </div>
+        </div>
+        <p class="sosa-cite"><a href="/sosa-whitepaper.pdf" style="color: var(--gray-500); text-decoration: underline; text-decoration-style: dotted;">Shatz, M. (2026). &ldquo;SOSA&trade;: Supervised Orchestrated Secured Agents &mdash; A Methodology for Production-Grade Autonomous AI Operations.&rdquo; MSApps Research.</a></p>
+    </div>
+</section>
+
+<!-- DASHBOARD SCREENSHOTS -->
+<section style="background: var(--dark); padding: 5rem 2rem;">
+    <div class="section-inner">
+        <div class="section-header">
+            <div class="section-label" style="color: var(--primary-light);">See It In Action</div>
+            <h2 style="color: var(--white);">A Real Dashboard. Real Agents. Real Results.</h2>
+            <p style="color: rgba(255,255,255,0.6);">Every screenshot below is from a live OpsAgent deployment. This is what your operations look like when AI is running the show.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem;">
+            <div style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 15px 50px rgba(0,0,0,0.4); transition: transform 0.3s;" class="fade-in">
+                <img src="screenshot-overview.png" alt="OpsAgent Dashboard — Operations Overview" style="width:100%; display:block;" loading="lazy">
+                <div style="padding: 1rem 1.25rem; background: rgba(255,255,255,0.03);">
+                    <div style="color: var(--white); font-weight: 600; font-size: 0.95rem;">Operations Overview</div>
+                    <div style="color: rgba(255,255,255,0.45); font-size: 0.82rem; margin-top: 0.25rem;">Active agents, alerts, and recent documents at a glance</div>
+                </div>
+            </div>
+            <div style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 15px 50px rgba(0,0,0,0.4); transition: transform 0.3s;" class="fade-in">
+                <img src="screenshot-agents.png" alt="OpsAgent Dashboard — Agent Monitoring" style="width:100%; display:block;" loading="lazy">
+                <div style="padding: 1rem 1.25rem; background: rgba(255,255,255,0.03);">
+                    <div style="color: var(--white); font-weight: 600; font-size: 0.95rem;">Agent Monitoring</div>
+                    <div style="color: rgba(255,255,255,0.45); font-size: 0.82rem; margin-top: 0.25rem;">Live status, KPIs, and scheduling for every AI agent</div>
+                </div>
+            </div>
+            <div style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 15px 50px rgba(0,0,0,0.4); transition: transform 0.3s;" class="fade-in">
+                <img src="screenshot-approvals.png" alt="OpsAgent Dashboard — Human Approvals" style="width:100%; display:block;" loading="lazy">
+                <div style="padding: 1rem 1.25rem; background: rgba(255,255,255,0.03);">
+                    <div style="color: var(--white); font-weight: 600; font-size: 0.95rem;">Human-in-the-Loop Approvals</div>
+                    <div style="color: rgba(255,255,255,0.45); font-size: 0.82rem; margin-top: 0.25rem;">Review and authorize high-impact agent actions before execution</div>
+                </div>
+            </div>
+            <div style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 15px 50px rgba(0,0,0,0.4); transition: transform 0.3s;" class="fade-in">
+                <img src="screenshot-metrics.png" alt="OpsAgent Dashboard — Metrics & KPIs" style="width:100%; display:block;" loading="lazy">
+                <div style="padding: 1rem 1.25rem; background: rgba(255,255,255,0.03);">
+                    <div style="color: var(--white); font-weight: 600; font-size: 0.95rem;">Metrics & KPIs</div>
+                    <div style="color: rgba(255,255,255,0.45); font-size: 0.82rem; margin-top: 0.25rem;">Cross-department performance tracking in real time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- SECURITY -->
 <section id="security" style="background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 60%, #0F172A 100%); padding: 5rem 2rem;">
