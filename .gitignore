@@ -10,3 +10,6 @@ gcal-token.json
 logs/
 mcp-servers.json
 node_modules/
+
+# Local Netlify folder
+.netlify

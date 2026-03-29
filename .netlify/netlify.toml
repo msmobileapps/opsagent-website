@@ -1,16 +1,19 @@
+headersOrigin = "config"
+redirectsOrigin = "config"
 plugins = []
-headers = []
-redirects = []
 
 [functions]
 
 [functions."*"]
 
 [build]
-publish = "/Users/michalshatz/Documents/Claude/opsAgent"
-publishOrigin = "default"
+publish = "/Users/michalshatz/Documents/Claude/opsagent-website"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "echo 'Static site — no build needed'"
 
 [build.environment]
+NODE_VERSION = "20"
 
 [build.processing]
 
@@ -23,3 +26,41 @@ publishOrigin = "default"
 [build.processing.js]
 
 [build.services]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+for = "/*.html"
+
+[headers.values]
+Cache-Control = "public, max-age=3600"
+
+[[headers]]
+for = "/*.png"
+
+[headers.values]
+Cache-Control = "public, max-age=86400"
+
+[[headers]]
+for = "/*.jpg"
+
+[headers.values]
+Cache-Control = "public, max-age=86400"
+
+[[redirects]]
+from = "/he/*"
+to = "/he/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
