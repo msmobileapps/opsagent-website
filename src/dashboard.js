@@ -16,6 +16,12 @@ import {
   deleteClient,
 } from './client-registry.js';
 import { proxyToClient, proxySSEToClient } from './tunnel-proxy.js';
+import {
+  listCoworkTasks,
+  getCoworkTask,
+  getCoworkTaskOutput,
+  updateCoworkTaskMeta,
+} from './cowork-bridge.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENTS_DIR = path.join(__dirname, '..', 'clients');
@@ -346,6 +352,35 @@ app.get('/api/clients/:clientId/health', async (req, res) => {
 app.get('/api/health', async (req, res) => {
   const results = await checkAllClientsHealth();
   res.json({ clients: results });
+});
+
+// ── Cowork Tasks API ────────────────────────────────────────────────────────
+
+// List all Cowork scheduled tasks
+app.get('/api/cowork/tasks', (req, res) => {
+  const tasks = listCoworkTasks();
+  res.json({ tasks });
+});
+
+// Get a single task with full details
+app.get('/api/cowork/tasks/:taskId', (req, res) => {
+  const task = getCoworkTask(req.params.taskId);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
+  res.json(task);
+});
+
+// Get task output (latest or specific session)
+app.get('/api/cowork/tasks/:taskId/output', (req, res) => {
+  const output = getCoworkTaskOutput(req.params.taskId, req.query.sessionId);
+  if (!output) return res.json({ sessionId: null, files: {} });
+  res.json(output);
+});
+
+// Update task metadata (enable/disable, schedule)
+app.put('/api/cowork/tasks/:taskId', (req, res) => {
+  const updated = updateCoworkTaskMeta(req.params.taskId, req.body);
+  if (!updated) return res.status(404).json({ error: 'Task not found' });
+  res.json(updated);
 });
 
 // ── Tunnel Proxy ─────────────────────────────────────────────────────────────
