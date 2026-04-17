@@ -5,6 +5,23 @@
 [build.environment]
   NODE_VERSION = "20"
 
+
+# Pretty URL rewrites
+[[redirects]]
+  from = "/intake"
+  to = "/intake.html"
+  status = 200
+
+[[redirects]]
+  from = "/integrations"
+  to = "/integrations.html"
+  status = 200
+
+[[redirects]]
+  from = "/case-study"
+  to = "/case-study.html"
+  status = 200
+
 # Hebrew default, English via ?lang=en
 [[redirects]]
   from = "/he/*"

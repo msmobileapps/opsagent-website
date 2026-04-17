@@ -1029,15 +1029,42 @@
         .fade-in {
             opacity: 0;
             transform: translateY(30px);
-            transition: all 0.6s ease;
+            transition: opacity 0.7s ease, transform 0.7s ease;
         }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        /* Stagger delays */
+        .fade-in:nth-child(2) { transition-delay: 0.1s; }
+        .fade-in:nth-child(3) { transition-delay: 0.2s; }
+        .fade-in:nth-child(4) { transition-delay: 0.3s; }
+        .fade-in:nth-child(5) { transition-delay: 0.4s; }
+        .fade-in:nth-child(6) { transition-delay: 0.5s; }
+
+        /* Slide variants */
+        .slide-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .slide-right { opacity: 0; transform: translateX( 40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .slide-left.visible, .slide-right.visible { opacity: 1; transform: translateX(0); }
+
+        /* Hero entrance */
+        @keyframes heroFadeUp   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes heroFadeRight { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+        .hero > .hero-inner > div:first-child { animation: heroFadeUp 0.9s ease both; }
+        .hero-visual { animation: heroFadeRight 1s ease 0.3s both; }
+
+        /* Page load */
+        body { animation: bodyFadeIn 0.4s ease; }
+        @keyframes bodyFadeIn { from { opacity:0; } to { opacity:1; } }
+
+        /* Nav underline hover */
+        .nav-links a:not(.btn) { position: relative; }
+        .nav-links a:not(.btn)::after { content:''; position:absolute; bottom:-3px; left:0; width:0; height:2px; background:var(--primary-light); transition:width 0.25s ease; }
+        .nav-links a:not(.btn):hover::after { width:100%; }
+
+        /* Card hover lift */
+        .problem-card, .service-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .problem-card:hover, .service-card:hover { transform: translateY(-6px); }
     </style>
-</head>
+<script async src='https://www.googletagmanager.com/gtag/js?id=G-SW9F3W4ER7'></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-SW9F3W4ER7');</script></head>
 <body>
 
 <!-- NAV -->
@@ -1048,10 +1075,13 @@
             OpsAgent
         </a>
         <div class="nav-links">
-            <a href="#services">Services</a>            <a href='/integrations'>Integrations</a>
+            <a href="#services">Services</a>
+            <a href='/integrations'>Integrations</a>
             <a href="#how-it-works">How It Works</a>
             <a href="#sosa">SOSA&trade;</a>
             <a href="#security">Security</a>
+            <a href="https://claude.opsagents.agency" target="_blank">Claude</a>
+            <a href="https://shopify.opsagents.agency" target="_blank">Shopify</a>
             <a href="#pricing">Pricing</a>
             <a href="/intake" class="btn btn-primary">Get Started</a>
         </div>
@@ -1093,7 +1123,7 @@
             </div>
         </div>
         <div class="hero-visual">
-            <img src="dashboard-hero.png" alt="OpsAgent Dashboard — Agent Monitoring" style="width:100%;border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08);" loading="lazy">
+            <img src="dashboard-hero.png" alt="OpsAgent Dashboard — Agent Monitoring" style="width:100%;border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08);" loading="eager">
         </div>
     </div>
 </section>
@@ -1684,7 +1714,7 @@
         <div class="footer-text">&copy; 2026 OpsAgent. All rights reserved.</div>
         <div class="footer-links">
             <a href="#sosa">SOSA&trade; Framework</a>
-            <a href="mailto:michal@msapps.mobi">Contact</a>
+            <a href="https://shopify.opsagents.agency/contact">Contact</a>
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
         </div>
