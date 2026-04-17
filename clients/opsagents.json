@@ -1,0 +1,79 @@
+{
+  "id": "opsagents",
+  "name": "OpsAgents",
+  "contact_email": "michal@opsagents.agency",
+  "timezone": "Asia/Jerusalem",
+  "industry": "AI agency / business automation",
+  "company_size": "small team, 5-15 people",
+  "tunnel_url": "http://localhost:4243",
+  "vm_id": "vm-opsagents-001",
+  "dashboard": {
+    "route": "/demo/opsagents",
+    "language": "en",
+    "rtl": false,
+    "brand_color": "violet",
+    "logo_icon": "Zap"
+  },
+  "agents": {
+    "lead-pipeline": {
+      "enabled": true,
+      "schedule": "0 8 * * 0-4",
+      "context": {
+        "crm_tool": "Google Calendar (michal@opsagents.agency)",
+        "report_email": "michal@opsagents.agency",
+        "pipeline_notes": "Leads tracked as Google Calendar events. Each event includes status and follow-up notes in the description. OpsAgents prospects are agency clients looking to automate operations.",
+        "focus": "Prioritize hot leads, flag anyone not contacted in 7+ days, surface agency deals in pipeline"
+      }
+    },
+    "linkedin-outreach": {
+      "enabled": true,
+      "schedule": "0 9 * * 0-4",
+      "context": {
+        "target_segment": "CEOs and Operations Managers at Israeli SMBs, 10-200 employees, looking to automate back-office",
+        "daily_message_limit": "10",
+        "linkedin_profile": "Michal Shatz, CEO at OpsAgents",
+        "message_style": "personalized, short, value-first, no hard sell",
+        "crm_tool": "Notion"
+      }
+    },
+    "social-posts": {
+      "enabled": true,
+      "schedule": "0 7 * * 0-4",
+      "context": {
+        "platforms": "linkedin, instagram, facebook, twitter/X",
+        "brand_voice": "confident, practical, results-driven — shows real automation wins without being overly technical",
+        "content_themes": "AI agents replacing back-office tasks, client success stories, behind-the-scenes of OpsAgents, ROI of automation",
+        "linkedin_focus": "thought leadership, B2B audience, agency positioning",
+        "instagram_focus": "behind the scenes, personal brand, team culture"
+      }
+    },
+    "receipts": {
+      "enabled": true,
+      "schedule": "0 8 * * 1",
+      "context": {
+        "accounting_tool": "iCount",
+        "email_to_scan": "michal@opsagents.agency (Gmail)",
+        "transaction_source": "bank + credit card statements in iCount",
+        "instructions": "Match unmatched transactions to receipts/invoices found in Gmail. Log missing ones."
+      }
+    },
+    "invoicing": {
+      "enabled": true,
+      "schedule": "0 9 1 * *",
+      "context": {
+        "billing_tool": "iCount",
+        "billing_email": "michal@opsagents.agency",
+        "instructions": "Generate end-of-month client invoices. Pull hours from timesheets. Send draft report to michal@opsagents.agency for approval before issuing."
+      }
+    },
+    "recruiter": {
+      "enabled": false,
+      "schedule": "0 10 * * 1",
+      "context": {
+        "open_roles": "AI Integration Engineer, Operations Automation Specialist",
+        "job_boards": "AllJobs, LinkedIn, Goozali, Zuze",
+        "screening_criteria": "Must have: AI/LLM experience, automation background. Nice: startup, ops consulting experience."
+      }
+    }
+  }
+}
