@@ -76,6 +76,12 @@ textarea{min-height:80px;resize:vertical}
 input::placeholder,textarea::placeholder{color:#484f58}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
+/* Shopify deep-dive (Card #7) */
+.shopify-deep{display:none;border-left:3px solid #95bf47;background:rgba(149,191,71,0.05);border-radius:8px;padding:16px;margin-top:12px}
+.shopify-deep.on{display:block}
+.shopify-tier-hint{font-size:12px;color:#95bf47;margin-top:6px;font-weight:600}
+.shopify-badge{display:inline-block;background:#95bf47;color:#0d1117;font-size:10px;font-weight:700;letter-spacing:0.5px;padding:2px 8px;border-radius:10px;margin-bottom:8px}
+
 /* Checkboxes / radios */
 .check-grid,.radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .check-item,.radio-item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 12px;cursor:pointer;font-size:13px;color:#c9d1d9;transition:all 0.2s;user-select:none;line-height:1.4}
@@ -333,6 +339,36 @@ input::placeholder,textarea::placeholder{color:#484f58}
           <label class="radio-item" onclick="pickRadio(this,'ecom'); return false;"><div class="radio-dot"></div><span class="he-text">בתכנון</span><span class="en-text">In planning</span><input type="radio" name="ecommerce" value="Planned" hidden></label>
         </div>
         <input type="text" name="ecommerce_url" data-he="כתובת האתר (אם יש)..." data-en="Website URL (if exists)..." placeholder="כתובת האתר..." style="margin-top:8px">
+
+        <!-- Shopify deep-dive (Card #7 — auto-revealed when ecommerce=Shopify) -->
+        <input type="hidden" name="platform" id="platformField" value="">
+        <input type="hidden" name="suggested_tier" id="suggestedTierField" value="">
+        <div class="shopify-deep" id="shopifyDeep">
+          <div class="shopify-badge">SHOPIFY MERCHANT</div>
+          <div class="field">
+            <label class="field-label"><span class="he-text">כמה הזמנות בחודש?</span><span class="en-text">Monthly orders</span><span class="hint"><span class="he-text">משתמש לבחירת רמת השירות המתאימה</span><span class="en-text">Used to suggest the right tier</span></span></label>
+            <div class="radio-grid">
+              <label class="radio-item" onclick="pickRadio(this,'mo'); shopifyTier(); return false;"><div class="radio-dot"></div><span class="he-text">פחות מ-100</span><span class="en-text">Under 100</span><input type="radio" name="monthly_orders" value="lt_100" hidden></label>
+              <label class="radio-item" onclick="pickRadio(this,'mo'); shopifyTier(); return false;"><div class="radio-dot"></div>100–1,000<input type="radio" name="monthly_orders" value="100_1k" hidden></label>
+              <label class="radio-item" onclick="pickRadio(this,'mo'); shopifyTier(); return false;"><div class="radio-dot"></div>1,000–10,000<input type="radio" name="monthly_orders" value="1k_10k" hidden></label>
+              <label class="radio-item" onclick="pickRadio(this,'mo'); shopifyTier(); return false;"><div class="radio-dot"></div>10,000+<input type="radio" name="monthly_orders" value="gt_10k" hidden></label>
+            </div>
+            <div class="shopify-tier-hint" id="shopifyTierHint"></div>
+          </div>
+          <div class="field">
+            <label class="field-label"><span class="he-text">אפליקציות Shopify בשימוש</span><span class="en-text">Shopify apps in use</span></label>
+            <div class="check-grid">
+              <label class="check-item" onclick="tog(this); return false;"><div class="check-box">✓</div>Klaviyo<input type="checkbox" name="shopify_apps" value="Klaviyo" hidden></label>
+              <label class="check-item" onclick="tog(this); return false;"><div class="check-box">✓</div>Gorgias<input type="checkbox" name="shopify_apps" value="Gorgias" hidden></label>
+              <label class="check-item" onclick="tog(this); return false;"><div class="check-box">✓</div>ReCharge<input type="checkbox" name="shopify_apps" value="ReCharge" hidden></label>
+              <label class="check-item" onclick="tog(this); return false;"><div class="check-box">✓</div>Shipstation<input type="checkbox" name="shopify_apps" value="Shipstation" hidden></label>
+              <label class="check-item" onclick="tog(this); return false;"><div class="check-box">✓</div>Loop Returns<input type="checkbox" name="shopify_apps" value="Loop" hidden></label>
+              <label class="check-item" onclick="tog(this); return false;"><div class="check-box">✓</div>Postscript<input type="checkbox" name="shopify_apps" value="Postscript" hidden></label>
+              <label class="check-item" onclick="tog(this); return false;"><div class="check-box">✓</div>Judge.me<input type="checkbox" name="shopify_apps" value="Judge.me" hidden></label>
+              <label class="check-item" onclick="tog(this); return false;"><div class="check-box">✓</div>Shopify Flow<input type="checkbox" name="shopify_apps" value="Shopify Flow" hidden></label>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="field">
@@ -658,6 +694,7 @@ input::placeholder,textarea::placeholder{color:#484f58}
   <div class="success" id="successMsg">
     <div class="success-icon">🎉</div>
     <h2><span class="he-text">קיבלנו!</span><span class="en-text">Got it!</span></h2>
+    <p id="shopifyTierLine" style="color:#95bf47;font-weight:600;margin-bottom:12px"></p>
     <p>
       <span class="he-text">נחזור אליכם תוך <strong>24 שעות</strong> עם תוכנית אינטגרציה מותאמת.</span>
       <span class="en-text">We'll be in touch within <strong>24 hours</strong> with a tailored integration plan.</span>
@@ -708,6 +745,39 @@ function pickRadio(el, group) {
   el.closest('.radio-grid').querySelectorAll('.radio-item').forEach(function(r){ r.classList.remove('on'); });
   el.classList.add('on');
   el.querySelector('input').checked = true;
+  if (group === 'ecom') { toggleShopifyDeep(); }
+}
+
+function toggleShopifyDeep() {
+  var deep = document.getElementById('shopifyDeep');
+  var pf = document.getElementById('platformField');
+  var picked = document.querySelector('input[name="ecommerce"]:checked');
+  if (deep && picked && picked.value === 'Shopify') {
+    deep.classList.add('on');
+    if (pf) pf.value = 'shopify';
+  } else {
+    if (deep) deep.classList.remove('on');
+    if (pf) pf.value = '';
+    var tf = document.getElementById('suggestedTierField'); if (tf) tf.value = '';
+    var hint = document.getElementById('shopifyTierHint'); if (hint) hint.textContent = '';
+  }
+}
+
+function shopifyTier() {
+  var picked = document.querySelector('input[name="monthly_orders"]:checked');
+  if (!picked) return;
+  var map = {
+    'lt_100':  { tier: 'Starter', price: '$1,200/mo' },
+    '100_1k':  { tier: 'Growth',  price: '$2,200/mo' },
+    '1k_10k':  { tier: 'Growth',  price: '$2,200/mo' },
+    'gt_10k':  { tier: 'Scale',   price: 'from $4,200/mo' }
+  };
+  var rec = map[picked.value];
+  if (!rec) return;
+  var tf = document.getElementById('suggestedTierField');
+  if (tf) tf.value = rec.tier;
+  var hint = document.getElementById('shopifyTierHint');
+  if (hint) hint.textContent = '✓ Suggested fit: ' + rec.tier + ' tier (' + rec.price + ')';
 }
 
 document.getElementById('intakeForm').addEventListener('submit', function(e) {
@@ -718,6 +788,11 @@ document.getElementById('intakeForm').addEventListener('submit', function(e) {
     headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
     body: JSON.stringify(Object.fromEntries(data))
   }).then(function(res) {
+    var t = document.getElementById('suggestedTierField');
+    if (t && t.value) {
+      var line = document.getElementById('shopifyTierLine');
+      if (line) line.textContent = '✓ Based on your monthly orders, our ' + t.value + ' tier looks like the right fit.';
+    }
     document.getElementById('intakeForm').style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
   }).catch(function() {
