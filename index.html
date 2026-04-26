@@ -1501,6 +1501,212 @@
     </div>
 </section>
 
+<!-- ==== STRATEGIC PARTNERS — 3-CARD GRID (Trello #8 — approved 2026-04-26) ==== -->
+<style>
+    /* Scoped — partners-3card-grid */
+    .partners-section{
+        padding:5rem 2rem;
+        background:linear-gradient(135deg,#0F172A 0%,#1E1B4B 50%,#312E81 100%);
+        position:relative;
+    }
+    .partners-section .partners-inner{max-width:1200px;margin:0 auto}
+    .partners-section .partners-header{text-align:center;margin-bottom:3rem}
+    .partners-section .partners-brand{
+        height:48px;width:auto;display:inline-block;margin-bottom:1.25rem;
+        filter:drop-shadow(0 0 16px rgba(124,58,237,.25));
+    }
+    .partners-section .partners-kicker{
+        display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.14em;
+        text-transform:uppercase;color:#8B5CF6;
+        background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.35);
+        padding:.4rem 1rem;border-radius:100px;margin-bottom:1rem;
+    }
+    .partners-section h2{
+        font-size:2.4rem;font-weight:800;color:#fff;line-height:1.15;
+        margin-bottom:.85rem;letter-spacing:-.01em;
+    }
+    .partners-section .partners-sub{
+        color:rgba(255,255,255,.66);font-size:1.05rem;max-width:640px;
+        margin:0 auto;line-height:1.5;
+    }
+    .partners-grid{
+        display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+    }
+    @media (max-width:900px){.partners-grid{grid-template-columns:1fr}}
+
+    .partner-card{
+        position:relative;
+        background:var(--card-bg,rgba(255,255,255,.04));
+        border:1px solid var(--card-border,rgba(255,255,255,.08));
+        border-radius:20px;padding:2rem 1.75rem;
+        display:flex;flex-direction:column;gap:1.1rem;
+        transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+    }
+    .partner-card:hover{
+        transform:translateY(-3px);
+        border-color:var(--card-border-hover,rgba(255,255,255,.18));
+        box-shadow:0 20px 40px rgba(0,0,0,.35);
+    }
+    .partner-card__logo{
+        height:72px;display:flex;align-items:center;justify-content:flex-start;
+    }
+    .partner-card__logo--single{
+        width:56px;height:56px;border-radius:14px;
+        background:var(--logo-bg,rgba(255,255,255,.08));
+        display:flex;align-items:center;justify-content:center;
+    }
+    .partner-card__logo--single svg{width:32px;height:32px}
+    /* monday variant — stack of 3 wordmarks, same vertical budget */
+    .partner-card__logo--stack{
+        flex-direction:column;gap:6px;align-items:flex-start;height:auto;
+    }
+    .partner-card__logo--stack img{
+        height:20px;width:auto;max-width:180px;object-fit:contain;opacity:.95;
+    }
+    .partner-card__logo--stack img.monday-partner{height:22px}
+    .partner-card__logo--stack img.monday-dev{height:18px}
+    .partner-card__logo--stack img.monday-ai{height:18px}
+
+    .partner-card__badge{
+        display:inline-block;
+        font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+        color:var(--accent-color);
+        padding:4px 10px;border-radius:999px;
+        background:var(--badge-bg,rgba(255,255,255,.06));
+        border:1px solid var(--badge-border,currentColor);
+        align-self:flex-start;
+    }
+    .partner-card__heading{
+        font-size:1.35rem;font-weight:800;line-height:1.25;color:#fff;margin:0;
+    }
+    .partner-card__promise{
+        font-size:.95rem;line-height:1.6;color:rgba(255,255,255,.78);margin:0;
+    }
+    .partner-card__bullets{
+        list-style:none;display:flex;flex-direction:column;gap:.55rem;margin:0;padding:0;
+    }
+    .partner-card__bullets li{
+        font-size:.88rem;line-height:1.5;color:rgba(255,255,255,.82);
+        padding-left:1.25rem;position:relative;
+    }
+    .partner-card__bullets li::before{
+        content:"\203A";position:absolute;left:0;top:0;
+        color:var(--accent-color);font-weight:800;
+    }
+    .partner-card__cta{
+        margin-top:auto;display:inline-flex;align-items:center;gap:.35rem;
+        font-size:.92rem;font-weight:600;color:var(--accent-color);
+        text-decoration:none;align-self:flex-start;
+        border-bottom:1px solid transparent;transition:border-color .2s;
+    }
+    .partner-card__cta:hover{border-bottom-color:currentColor}
+
+    /* variants */
+    .partner-card--claude{
+        --accent-color:#8B5CF6;
+        --card-bg:rgba(139,92,246,.06);
+        --card-border:rgba(139,92,246,.2);
+        --card-border-hover:rgba(139,92,246,.4);
+        --logo-bg:rgba(139,92,246,.15);
+        --badge-bg:rgba(139,92,246,.12);
+        --badge-border:rgba(139,92,246,.35);
+    }
+    .partner-card--shopify{
+        --accent-color:#95BF47;
+        --card-bg:rgba(149,191,71,.06);
+        --card-border:rgba(149,191,71,.2);
+        --card-border-hover:rgba(149,191,71,.4);
+        --logo-bg:rgba(149,191,71,.15);
+        --badge-bg:rgba(149,191,71,.12);
+        --badge-border:rgba(149,191,71,.35);
+    }
+    .partner-card--monday{
+        --accent-color:#FF5A46;
+        --card-bg:rgba(255,90,70,.06);
+        --card-border:rgba(255,90,70,.2);
+        --card-border-hover:rgba(255,90,70,.4);
+        --logo-bg:rgba(255,255,255,.06);
+        --badge-bg:rgba(255,90,70,.12);
+        --badge-border:rgba(255,90,70,.35);
+    }
+</style>
+
+<section class="partners-section" id="partners">
+    <div class="partners-inner">
+
+        <div class="partners-header">
+            <img src="assets/opsagents-landscape.svg" alt="OpsAgents" class="partners-brand" />
+            <div class="partners-kicker">Strategic partners</div>
+            <h2>OpsAgents Works With the Best</h2>
+            <p class="partners-sub">Authorized partnerships that operationalize the platforms you already run on. Real integrations, real partner programs &mdash; not screen-scraping.</p>
+        </div>
+
+        <div class="partners-grid">
+
+            <!-- CLAUDE -->
+            <article class="partner-card partner-card--claude" id="opsagents-claude">
+                <div class="partner-card__logo">
+                    <div class="partner-card__logo--single">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="#8B5CF6" stroke-width="2" fill="#8B5CF6" fill-opacity=".2"/>
+                            <circle cx="12" cy="12" r="3" fill="#8B5CF6"/>
+                        </svg>
+                    </div>
+                </div>
+                <span class="partner-card__badge">Anthropic Partner Network</span>
+                <h3 class="partner-card__heading">OpsAgents + Claude</h3>
+                <p class="partner-card__promise">Claude is the reasoning layer inside every OpsAgents workflow &mdash; turning instructions into decisions, decisions into actions.</p>
+                <ul class="partner-card__bullets">
+                    <li>Orchestrate multi-step business workflows via Claude Agent SDK</li>
+                    <li>Connect every agent tool through MCP &mdash; email, calendar, CRM</li>
+                    <li>Audit every AI decision with SOSA&trade;-grade governance</li>
+                </ul>
+                <a class="partner-card__cta" href="https://claude.opsagents.agency">Explore Claude workflows &rarr;</a>
+            </article>
+
+            <!-- SHOPIFY -->
+            <article class="partner-card partner-card--shopify" id="opsagents-shopify">
+                <div class="partner-card__logo">
+                    <div class="partner-card__logo--single">
+                        <img src="assets/partners/shopify-glyph.svg" alt="Shopify" style="width:32px;height:32px;object-fit:contain"/>
+                    </div>
+                </div>
+                <span class="partner-card__badge">Verified Shopify Partner</span>
+                <h3 class="partner-card__heading">OpsAgents + Shopify</h3>
+                <p class="partner-card__promise">OpsAgents turns your Shopify store into a self-running operation &mdash; orders processed, inventory tracked, customers followed up, automatically.</p>
+                <ul class="partner-card__bullets">
+                    <li>Automate order fulfillment, returns, and customer updates</li>
+                    <li>Sync inventory alerts and restock workflows</li>
+                    <li>Install in one click via the Symmetry theme flow</li>
+                </ul>
+                <a class="partner-card__cta" href="https://shopify.opsagents.agency">Install Symmetry &rarr;</a>
+            </article>
+
+            <!-- MONDAY -->
+            <article class="partner-card partner-card--monday" id="opsagents-monday">
+                <div class="partner-card__logo partner-card__logo--stack">
+                    <img class="monday-partner" src="assets/partners/monday-partner.png" alt="monday.com Partner"/>
+                    <img class="monday-dev"     src="assets/partners/monday-dev.png"     alt="monday dev"/>
+                    <img class="monday-ai"      src="assets/partners/monday-ai.png"      alt="monday AI"/>
+                </div>
+                <span class="partner-card__badge">Authorized Partner</span>
+                <h3 class="partner-card__heading">OpsAgents + monday.com</h3>
+                <p class="partner-card__promise">OpsAgents operationalizes monday.com &mdash; turning boards into AI-driven workflows, not just task lists that collect dust.</p>
+                <ul class="partner-card__bullets">
+                    <li>Wire monday.com boards directly into autonomous agent pipelines</li>
+                    <li>Automate status updates, assignments, and follow-ups across teams</li>
+                    <li>Close the loop on monday dev sprints and monday AI prompts</li>
+                </ul>
+                <a class="partner-card__cta" href="https://monday.opsagents.agency">Start a monday.com conversation &rarr;</a>
+            </article>
+
+        </div>
+
+    </div>
+</section>
+<!-- ==== END STRATEGIC PARTNERS ==== -->
+
+
 <!-- INTEGRATIONS BANNER -->
 <section style="padding: 4rem 2rem; background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%);">
     <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
