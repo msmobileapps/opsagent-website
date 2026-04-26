@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support — OpsAgent</title>
+<meta name="description" content="Get help with OpsAgent — channels, response times, and what to include when you reach out.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0d1117; --card:#161b22; --line:rgba(255,255,255,0.08); --text:#e6edf3; --muted:#8b949e; --accent:#6C3AED; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+  .nav { background:rgba(13,17,23,.85); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); padding:1rem 2rem; }
+  .nav a { color:var(--text); text-decoration:none; font-weight:800; }
+  main { max-width:760px; margin:0 auto; padding:4rem 2rem 6rem; }
+  h1 { font-size:2.4rem; font-weight:800; margin-bottom:.5rem; }
+  .lede { color:var(--muted); font-size:1.05rem; margin-bottom:2.5rem; }
+  h2 { font-size:1.3rem; font-weight:800; margin-top:2.5rem; margin-bottom:.75rem; }
+  p, li { color:var(--text); margin-bottom:1rem; }
+  ul { padding-left:1.25rem; }
+  a { color:#8B5CF6; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; margin:1.5rem 0; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:1.25rem 1.5rem; }
+  .card h3 { font-size:1rem; font-weight:800; margin-bottom:.4rem; }
+  .card p { font-size:.92rem; color:var(--muted); margin-bottom:.6rem; }
+  .card a { font-weight:600; }
+  .cta { display:inline-block; padding:.85rem 1.6rem; background:linear-gradient(135deg,#6C3AED,#8B5CF6); color:#fff; text-decoration:none; border-radius:12px; font-weight:600; margin-top:1rem; }
+  footer { border-top:1px solid var(--line); padding:2rem; text-align:center; color:var(--muted); font-size:.85rem; }
+  footer a { color:var(--muted); margin:0 .75rem; }
+</style>
+</head>
+<body>
+<nav class="nav"><a href="/">← OpsAgent</a></nav>
+<main>
+  <h1>Support</h1>
+  <p class="lede">A real human reads every message. We answer fast.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Email</h3>
+      <p>For everything: setup, billing, integrations, breakage, feedback.</p>
+      <a href="mailto:support@opsagents.agency">support@opsagents.agency</a>
+    </div>
+    <div class="card">
+      <h3>WhatsApp</h3>
+      <p>Faster turnaround for active customers and integration partners.</p>
+      <a href="https://wa.me/972544335596">+972 54-433-5596</a>
+    </div>
+    <div class="card">
+      <h3>Sales / new accounts</h3>
+      <p>Pricing, demos, custom enterprise scoping.</p>
+      <a href="/intake">Start the intake →</a>
+    </div>
+    <div class="card">
+      <h3>Security</h3>
+      <p>Vulnerability reports and security questionnaires.</p>
+      <a href="mailto:security@opsagents.agency">security@opsagents.agency</a>
+    </div>
+  </div>
+
+  <h2>Response times</h2>
+  <ul>
+    <li><strong>Standard plans</strong> — first reply within one business day, Sun–Thu, 09:00–18:00 IST.</li>
+    <li><strong>Enterprise / Plus</strong> — same-business-day reply, with optional priority Slack channel.</li>
+    <li><strong>Security incidents</strong> — acknowledged within 24h, status updates every 24h until resolved.</li>
+  </ul>
+
+  <h2>What to include</h2>
+  <p>The fastest path to a fix:</p>
+  <ul>
+    <li>Workspace / store name (so we can find your account quickly).</li>
+    <li>What you expected vs. what happened.</li>
+    <li>A timestamp (rough is fine — "around 14:30 IST today").</li>
+    <li>A screenshot or short Loom if the issue is visual.</li>
+    <li>The agent / workflow name if you know it (e.g. <code>recruiter</code>, <code>shopify-cart</code>).</li>
+  </ul>
+
+  <h2>Status &amp; incidents</h2>
+  <p>For ongoing incidents we post on this page and email all affected workspaces. Subscribe by sending "subscribe to status" to <a href="mailto:support@opsagents.agency">support@opsagents.agency</a>.</p>
+
+  <a class="cta" href="mailto:support@opsagents.agency?subject=OpsAgent%20support%20request">Email support now</a>
+</main>
+<footer>
+  <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/intake">Get started</a>
+</footer>
+</body>
+</html>
