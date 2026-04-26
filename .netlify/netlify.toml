@@ -7,7 +7,7 @@ plugins = []
 [functions."*"]
 
 [build]
-publish = "/Users/michalshatz/Documents/Claude/opsagent-website"
+publish = "/Users/sapirrubin/tmp-deploy/opsagent-website"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "echo 'Static site — no build needed'"
@@ -52,6 +52,78 @@ for = "/*.jpg"
 
 [headers.values]
 Cache-Control = "public, max-age=86400"
+
+[[redirects]]
+from = "/intake"
+to = "/intake.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/integrations"
+to = "/integrations.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/case-study"
+to = "/case-study.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/privacy"
+to = "/privacy.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/terms"
+to = "/terms.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/support"
+to = "/support.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
 
 [[redirects]]
 from = "/he/*"
